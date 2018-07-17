@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--+
     |
-    | Copyright (c) 2013, ROE (http://www.roe.ac.uk/)
+    | Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
     | All rights reserved.
     |
     | This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@
     <name>Enteucha</name>
     <description>
         <![CDATA[
-        High bandwidth cross match service.
+        Enteucha in-memory cross match service.
         ]]>
     </description>
 
