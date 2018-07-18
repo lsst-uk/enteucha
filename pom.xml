@@ -73,7 +73,7 @@
         
     <properties>
 
-        <firethorn.version>2.1.15</firethorn.version>
+        <firethorn.version>2.1.25</firethorn.version>
 
         <!--+
             | Generate checksums.

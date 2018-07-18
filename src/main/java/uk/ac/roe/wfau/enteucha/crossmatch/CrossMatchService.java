@@ -15,45 +15,59 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package uk.ac.roe.wfau.enteucha.webapp;
 
+package uk.ac.roe.wfau.enteucha.crossmatch;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
- *
- *
+ * Indexing service ....
+ * 
  */
+@Slf4j
 @Controller
-@RequestMapping(SystemController.SERVICE_PATH)
-public class SystemController
-implements WebappModel
+@RequestMapping(CrossMatchModel.CROSS_MATCH_PATH)
+public class CrossMatchService
+implements CrossMatchModel
     {
 
-    public static final String SERVICE_PATH = "/system" ;
 
-    public static final String SYSTEM_INFO_PATH = "info" ;
-    public static final String SYSTEM_INFO_VIEW = "system/system-info" ;
+    @SuppressWarnings("serial")
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public static class CrossMatchException
+    extends Exception
+        {
+        public CrossMatchException(Exception ouch)
+            {
+            super(ouch);
+            }
+        }
     
     /**
      * Public constructor.
-     *
+     *   
      */
-    public SystemController()
+    public CrossMatchService()
         {
+        log.debug("CrossMatchService() - constructor");
         }
 
     /**
-     * {@link RequestMethod#GET} request for the system info.
-     * <br/>Request path : [{@value #SYSTEM_INFO_PATH}}]
-     * <br/>Content type : [{@value #JSON_MIME}]
-     * @return The name of the JSP page, [{@value #SYSTEM_INFO_VIEW}].
+     * Our crossmatcher.
      * 
      */
-    @RequestMapping(value=SYSTEM_INFO_PATH, method=RequestMethod.GET, produces=JSON_MIME)
-    public String vosi(
-        ){
-        return SYSTEM_INFO_VIEW ;
-        }
+    @Autowired
+    private CrossMatcher crossmatcher ;
+
+
     }
