@@ -16,10 +16,14 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.dataset;
+package uk.ac.roe.wfau.enteucha.cqengine;
 
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.roe.wfau.enteucha.api.Position;
+import uk.ac.roe.wfau.enteucha.api.PositionImpl;
+import uk.ac.roe.wfau.enteucha.api.Zone;
+import uk.ac.roe.wfau.enteucha.cqengine.CQZoneImpl;
 
 /**
  * 
@@ -171,14 +175,13 @@ extends TestCase
 long a = System.currentTimeMillis();
         final Zone.ZoneSet zones = init(
             new CQZoneImpl.ZoneSet(10000),
-           -20.0,
-            20.0,
-            0.01
+            0.0,
+            2.0,
+            0.001
             );
 long b = System.currentTimeMillis();
 
 log.info("--------------------------");
-log.info("Total inserted [{}] in [{}]ms avg [{}]ms", zones.total(), (b-a),((b-a)/zones.total()) );
 
 long c = System.currentTimeMillis();
 final Iterable<Position> matches = zones.matches(
@@ -186,10 +189,12 @@ final Iterable<Position> matches = zones.matches(
                 1.20,
                 1.20
                 ),
-            0.025
+            0.002
             );
 long d = System.currentTimeMillis();
 
+log.info("--------------------------");
+log.info("Total inserted [{}] in [{}]ms avg [{}]ms", zones.total(), (b-a),((float)(b-a)/(float)zones.total()) );
 log.info("--------------------------");
         int count = 0 ;
         for (Position match : matches)
@@ -197,6 +202,9 @@ log.info("--------------------------");
             log.info("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
+log.info("--------------------------");
         log.info("Total found [{}] in [{}]ms", count, (d-c));
+log.info("--------------------------");
         }
     }
+

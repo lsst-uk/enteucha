@@ -16,7 +16,7 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.dataset;
+package uk.ac.roe.wfau.enteucha.cqengine;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,6 +33,9 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.roe.wfau.enteucha.api.Position;
+import uk.ac.roe.wfau.enteucha.api.PositionImpl;
+import uk.ac.roe.wfau.enteucha.api.Zone;
 import uk.ac.roe.wfau.enteucha.util.GenericIterable;
 
 /**
@@ -147,13 +150,13 @@ public class CQZoneImpl implements Zone
         public Iterable<Position> matches(Position target, Double radius)
             {
             log.debug("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
-            List<Position> list = new ArrayList<Position>();  
+            final List<Position> list = new ArrayList<Position>(100);  
             for (Zone zone : contains(target, radius))
                 {
-                log.debug("Checking zone [{}]", zone.ident());
+                log.debug("Checking zone [{}][{}]", zone.ident(), zone.count());
                 for (Position match : zone.matches(target, radius))
                     {
-                    log.debug("Found match [{}][{}]", match.ra(), match.dec());
+                    //log.debug("Found match [{}][{}]", match.ra(), match.dec());
                     list.add(match);
                     }
                 }
@@ -265,11 +268,10 @@ public class CQZoneImpl implements Zone
                             final Position temp = iter.next();
                             if (match(target, radius, temp))
                                 {
-                                log.debug("match found [{}][{}]", temp.ra(), temp.dec());
+                                log.debug("found   [{}][{}]", temp.ra(), temp.dec());
                                 return temp ;
                                 }
                             }
-                        log.debug("no matches");
                         return null ;
                         }
 
@@ -303,7 +305,19 @@ public class CQZoneImpl implements Zone
 
         log.debug("min max ra  [{}][{}]", minra,  maxra) ;
         log.debug("min max dec [{}][{}]", mindec, maxdec);
-        
+/*
+ *
+        return positions.retrieve(
+            QueryFactory.between(
+                CQZoneImpl.POS_RA,
+                minra,
+                true,
+                maxra,
+                true
+                )
+            );
+ *
+ */        
         return positions.retrieve(
             QueryFactory.and(
                 QueryFactory.between(
@@ -349,6 +363,15 @@ public class CQZoneImpl implements Zone
      */
     private final IndexedCollection<PositionImpl> positions = new ConcurrentIndexedCollection<PositionImpl>();
         {
+/*
+        positions.addIndex(
+            CompoundIndex.onAttributes(
+                CQZoneImpl.POS_RA,
+                CQZoneImpl.POS_DEC
+                )
+            );
+ */
+
         positions.addIndex(
             NavigableIndex.onAttribute(
                 CQZoneImpl.POS_RA
@@ -406,3 +429,4 @@ public class CQZoneImpl implements Zone
             }
         };
     }
+

@@ -16,7 +16,7 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.dataset;
+package uk.ac.roe.wfau.enteucha.api;
 
 /**
  * Public interface for a {@link Position} in the sky. 

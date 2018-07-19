@@ -16,9 +16,9 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.dataset;
+package uk.ac.roe.wfau.enteucha.api;
 
-import uk.ac.roe.wfau.enteucha.dataset.Position.Matcher;
+import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
 
 /**
  * Public interface for a declination stripe.

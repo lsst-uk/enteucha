@@ -16,7 +16,7 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.dataset;
+package uk.ac.roe.wfau.enteucha.api;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,7 @@ public class PositionImpl implements Position
      * Protected constructor.
      *  
      */
-    protected PositionImpl(final Position position)
+    public PositionImpl(final Position position)
         {
         this(
             position.ra(),
@@ -44,7 +44,7 @@ public class PositionImpl implements Position
      * Protected constructor.
      *  
      */
-    protected PositionImpl(final Double ra, final Double dec)
+    public PositionImpl(final Double ra, final Double dec)
         {
         this.ra  = ra ;
         this.dec = dec;
