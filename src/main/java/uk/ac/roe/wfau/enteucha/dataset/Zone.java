@@ -42,7 +42,12 @@ extends Matcher
          */
         public Iterable<Zone> contains(final Position target, final Double radius);
 
-        
+        /**
+         * The total number of {@link Position}s in this {@link ZoneSet}
+         * .
+         */
+        public long total();
+
         }
     
     /**
@@ -50,5 +55,11 @@ extends Matcher
      * 
      */
     public int ident();
+
+    /**
+     * Get the count of {@link Position}s in this {@link Zone}.
+     * 
+     */
+    public int count();
 
     }

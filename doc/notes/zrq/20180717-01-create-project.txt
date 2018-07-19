@@ -34,11 +34,12 @@ ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
 ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
 EOF
 
-source "${HOME}/enteucha.settings"
 
 # -----------------------------------------------------
 # Create the project directories.
 #[user@desktop]
+
+    source "${HOME}/enteucha.settings"
 
     mkdir -p "${ENTEUCHA_BASE}"
     mkdir -p "${ENTEUCHA_CODE}"
@@ -58,14 +59,34 @@ source "${HOME}/enteucha.settings"
         mkdir src/main/java/uk/ac/roe/wfau
         mkdir src/main/java/uk/ac/roe/wfau/enteucha
 
+        mkdir src/test
+        mkdir src/test/java
+        mkdir src/test/java/uk
+        mkdir src/test/java/uk/ac
+        mkdir src/test/java/uk/ac/roe
+        mkdir src/test/java/uk/ac/roe/wfau
+        mkdir src/test/java/uk/ac/roe/wfau/enteucha
+
+
         mkdir src/main/webapp
 
         mkdir src/main/docker
         mkdir src/main/docker/compose
 
+
+
     popd
 
 
+# -----------------------------------------------------
+# Compile and run our tests.
+#[user@desktop]
 
+    source "${HOME}/enteucha.settings"
 
+    pushd "${ENTEUCHA_CODE}"
+
+        mvn clean install
+
+    popd
 

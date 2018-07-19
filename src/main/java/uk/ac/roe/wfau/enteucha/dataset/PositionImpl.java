@@ -48,6 +48,15 @@ public class PositionImpl implements Position
         {
         this.ra  = ra ;
         this.dec = dec;
+
+        double radra  = Math.toRadians(ra);
+        double raddec = Math.toRadians(dec);
+        double cosdec = Math.cos(raddec);
+
+        this.cx = Math.cos(radra) * cosdec ;
+        this.cy = Math.sin(radra) * cosdec ;
+        this.cz = Math.sin(raddec) ;
+        
         }
 
     private Double ra;

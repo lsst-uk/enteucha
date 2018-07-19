@@ -54,21 +54,27 @@ public class CQZoneImpl implements Zone
      * 
      */
     @Slf4j
-    public static class CQZoneSetImpl
-    implements ZoneSet
+    public static class ZoneSet
+    implements Zone.ZoneSet
         {
+        private int count = 0 ;
         private double height ;
         
-        public CQZoneSetImpl(int count)
+        public ZoneSet(int count)
             {
             log.debug("CQZoneSetImpl() [{}]", count);
-            this.height = 180 / count ;
+            this.height = 180.0 / (double) count ;
             }
         
         @Override
         public Iterable<Zone> contains(final Position target, final Double radius)
             {
             log.debug("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
+
+            log.debug("height [{}]",  this.height);
+            log.debug("dec [{}][{}]", target.dec(), (target.dec() + 90), ((target.dec() + 90) - radius));
+            log.debug("min [{}][{}]", ((target.dec() + 90) - radius), (((target.dec() + 90) - radius) / this.height));
+            log.debug("max [{}][{}]", ((target.dec() + 90) + radius), (((target.dec() + 90) + radius) / this.height));
 
             final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
             final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
@@ -100,7 +106,8 @@ public class CQZoneImpl implements Zone
             }
 
         /**
-         * Select a {@link CQZoneImpl} based on identifier.  
+         * Select a {@link CQZoneImpl} based on identifier.
+         * Creates a new zone if needed.  
          * 
          */
         protected Zone select(final Integer ident)
@@ -117,7 +124,12 @@ public class CQZoneImpl implements Zone
                 return iter.next();
                 }
             else {
-                return null ;
+                final CQZoneImpl temp = new CQZoneImpl(
+                    ident
+                    ) ;
+                zones.add(temp);
+                log.debug("New zone [{}][{}]", temp.ident(), zones.size());
+                return temp ;
                 }
             }
 
@@ -135,7 +147,6 @@ public class CQZoneImpl implements Zone
         public Iterable<Position> matches(Position target, Double radius)
             {
             log.debug("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
-
             List<Position> list = new ArrayList<Position>();  
             for (Zone zone : contains(target, radius))
                 {
@@ -149,27 +160,26 @@ public class CQZoneImpl implements Zone
             return list ;
             }
 
+        private long total = 0 ;
+        
         @Override
         public void insert(final Position position)
             {
-            log.debug("insert() [{}][{}]", position.ra(), position.dec());
-
+            log.debug("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
             final Zone zone = select(
                     (int) Math.floor((position.dec() + 90) / this.height)
                     );
-            if (zone != null)
-                {
-                log.debug("Found [{}]", zone.ident());
-                zone.insert(
-                    position
-                    );
-                //
-                // Add special overlaps to the end zones ... 0 and 360
-                
-                }
-            else {
-                log.error("No zone !!");
-                }
+            log.debug("Zone [{}]", zone.ident());
+            zone.insert(
+                position
+                );
+            total++;
+            log.debug("Added [{}][{}]", zone.count(), total);
+            }
+
+        public long total()
+            {
+            return this.total;
             }
         }
     
@@ -205,7 +215,7 @@ public class CQZoneImpl implements Zone
 
     protected boolean match(final Position target, final Double radius, final Position pos)
         {
-        log.debug("match() [{}][{}][{}] [{}][{}]", target.ra(), target.dec(), radius, pos.ra(), pos.dec());
+        log.debug("match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
         double squares =
                 Math.pow(
                     pos.cx() - target.cx(),
@@ -224,14 +234,14 @@ public class CQZoneImpl implements Zone
                 Math.pow(
                     Math.sin(
                         Math.toRadians(
-                            radius/2
-                            )
+                            radius
+                            )/2
                         ),
                     2)
                 );
 
-        boolean result = (squares < range) ;
-        log.debug("compare [{}][{}]->[{}]", squares, range, result);
+        boolean result = (range > squares) ;
+        log.debug("compare [{}]>[{}]=[{}]", range, squares, result);
         return result;
         }
     
@@ -283,13 +293,16 @@ public class CQZoneImpl implements Zone
     
     protected ResultSet<PositionImpl> query(final Position target, final Double radius)
         {
-        log.debug("matcher() [{}][{}][{}]", target.ra(), target.dec(), radius);
+        log.debug("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
         double minra = (target.ra() - radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
         double maxra = (target.ra() + radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
 
         double mindec = (target.dec() - radius) ; 
         double maxdec = (target.dec() + radius) ; 
+
+        log.debug("min max ra  [{}][{}]", minra,  maxra) ;
+        log.debug("min max dec [{}][{}]", mindec, maxdec);
         
         return positions.retrieve(
             QueryFactory.and(
@@ -301,7 +314,7 @@ public class CQZoneImpl implements Zone
                     true
                     ),
                 QueryFactory.between(
-                    CQZoneImpl.POS_DEC,
+                    CQZoneImpl.POS_RA,
                     minra,
                     true,
                     maxra,
@@ -346,6 +359,12 @@ public class CQZoneImpl implements Zone
                 CQZoneImpl.POS_DEC
                 )
             );
+        }
+
+    @Override
+    public int count()
+        {
+        return positions.size();
         }
 
     /**
