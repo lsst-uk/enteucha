@@ -59,6 +59,19 @@ public class PositionImpl implements Position
         
         }
 
+    /**
+     * Protected constructor.
+     *  
+     */
+    public PositionImpl(final Double ra, final Double dec, final Double cx, final Double cy, final Double cz)
+        {
+        this.ra  = ra ;
+        this.dec = dec;
+        this.cx  = cx ;
+        this.cy  = cy ;
+        this.cz  = cz ;
+        }
+
     private Double ra;
     @Override
     public Double ra()

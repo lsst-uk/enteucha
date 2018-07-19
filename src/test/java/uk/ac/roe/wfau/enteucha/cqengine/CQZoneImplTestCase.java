@@ -170,7 +170,7 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void testFindMatchesLarge()
+    public void frogFindMatchesLarge()
         {
 long a = System.currentTimeMillis();
         final Zone.ZoneSet zones = init(

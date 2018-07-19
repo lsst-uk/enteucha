@@ -45,6 +45,12 @@ public interface Position
     public interface Matcher
         {
         /**
+         * Initialise the {@link Matcher}.
+         * 
+         */
+        public void init();
+        
+        /**
          * Select the {@link Position}s within a radius around a target {@link Position}.
          * 
          */
@@ -55,7 +61,9 @@ public interface Position
          * 
          */
         public void insert(final Position position);
-        
+
+        public Iterable<Position> verify();
+
         }
 
     

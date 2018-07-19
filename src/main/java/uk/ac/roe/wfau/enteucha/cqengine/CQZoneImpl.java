@@ -62,7 +62,11 @@ public class CQZoneImpl implements Zone
         {
         private int count = 0 ;
         private double height ;
-        
+
+        public void init()
+            {
+            }
+
         public ZoneSet(int count)
             {
             log.debug("CQZoneSetImpl() [{}]", count);
@@ -183,6 +187,13 @@ public class CQZoneImpl implements Zone
         public long total()
             {
             return this.total;
+            }
+
+        @Override
+        public Iterable<Position> verify()
+            {
+            // TODO Auto-generated method stub
+            return null;
             }
         }
     
@@ -390,6 +401,10 @@ public class CQZoneImpl implements Zone
         return positions.size();
         }
 
+    public void init()
+        {
+        }
+    
     /**
      * CQEngine {@link Attribute} for a zone identifier.
      * 
@@ -428,5 +443,11 @@ public class CQZoneImpl implements Zone
             return position.dec();
             }
         };
+    @Override
+    public Iterable<Position> verify()
+        {
+        // TODO Auto-generated method stub
+        return null;
+        }
     }
 
