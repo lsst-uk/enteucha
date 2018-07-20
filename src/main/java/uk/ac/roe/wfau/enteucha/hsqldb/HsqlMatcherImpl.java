@@ -24,10 +24,13 @@ import java.sql.SQLException;
 import java.sql.SQLType;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.sql.JDBCType;
+import java.sql.ResultSet;
 
 import javax.sql.DataSource;
+import javax.sql.RowSet;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -221,8 +224,7 @@ public class HsqlMatcherImpl implements Matcher
         try {
             this.connect();
     
-            final Statement statement = this.connection.createStatement();
-            statement.executeUpdate(
+            this.connection.createStatement().executeUpdate(
                 "CREATE TABLE zones ("
                 + "zone INT NOT NULL, "
                 + "ra  DOUBLE NOT NULL, "
@@ -232,6 +234,45 @@ public class HsqlMatcherImpl implements Matcher
                 + "cz  DOUBLE NOT NULL  "
                 + ")"
                 );
+
+            this.connection.createStatement().executeUpdate(
+                "CREATE INDEX zoneidx "
+                + "ON zones ("
+                + "    zone"
+                + ")"
+                );
+
+            this.connection.createStatement().executeUpdate(
+                "CREATE INDEX zoneradidx "
+                + "ON zones ("
+                + "    zone,"
+                + "    ra,"
+                + "    dec"
+                + ")"
+                );
+
+            this.connection.createStatement().executeUpdate(
+                "CREATE INDEX radidx "
+                + "ON zones ("
+                + "    ra,"
+                + "    dec"
+                + ")"
+                );
+
+            this.connection.createStatement().executeUpdate(
+                "CREATE INDEX raidx "
+                + "ON zones ("
+                + "    ra"
+                + ")"
+                );
+
+            this.connection.createStatement().executeUpdate(
+                "CREATE INDEX decidx "
+                + "ON zones ("
+                + "    dec"
+                + ")"
+                );
+
             }
         catch (final SQLException ouch)
             {
@@ -282,7 +323,7 @@ public class HsqlMatcherImpl implements Matcher
         log.debug("cy  [{}]", target.cy());
         log.debug("cz  [{}]", target.cz());
 
-        String query = "SELECT "
+        final String template = "SELECT "
             + "    zone, "
             + "    ra, "
             + "    dec,"
@@ -293,55 +334,61 @@ public class HsqlMatcherImpl implements Matcher
             + "    zones "
             + " WHERE "
             + "    zone BETWEEN "
-            + "        floor((:dec + 90 - :radius) / CONVERT(:height, SQL_DOUBLE)) "
+            + "        floor(({dec} + 90 - {radius}) / {height}) "
             + "    AND "
-            + "        floor((:dec + 90 + :radius) / CONVERT(:height, SQL_DOUBLE)) "
+            + "        floor(({dec} + 90 + {radius}) / {height}) "
             + " AND "
             + "    ra BETWEEN "
-            + "        (:ra - CONVERT(:radius, SQL_DOUBLE))/(cos(radians(abs(:dec))) + CONVERT(:epsilon, SQL_DOUBLE)) "
+            + "        ({ra} - {radius})/(cos(radians(abs({dec}))) + {epsilon}) "
             + "    AND "
-            + "        (:ra + CONVERT(:radius, SQL_DOUBLE))/(cos(radians(abs(:dec))) + CONVERT(:epsilon, SQL_DOUBLE)) "
+            + "        ({ra} + {radius})/(cos(radians(abs({dec}))) + {epsilon}) "
             + " AND "
             + "    dec BETWEEN "
-            + "        :dec - CONVERT(:radius, SQL_DOUBLE) "
+            + "        {dec} - {radius} "
             + "    AND "
-            + "        :dec + CONVERT(:radius, SQL_DOUBLE) "
+            + "        {dec} + {radius} "
             + "    AND  "
-            + "        (4 * power(sin(radians(CONVERT(:radius, SQL_DOUBLE) / 2)),2)) > (power((cx - :cxx), 2) + power((cy - :cyy), 2) + power(cz - :czz, 2)) ";
-                
-        final NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(
-            this.source
+            + "        (4 * power(sin(radians({radius} / 2)),2)) > (power((cx - {cx}), 2) + power((cy - {cy}), 2) + power(cz - {cz}, 2)) ";
+
+        final String query = template.replace(
+            "{ra}",   String.format("%e", target.ra()).toString()
+            ).replace(
+            "{dec}",  String.format("%e", target.dec()).toString()
+            ).replace(
+            "{cx}",  String.format("%e", target.cx()).toString()
+            ).replace(
+            "{cy}",  String.format("%e", target.cy()).toString()
+            ).replace(
+            "{cz}",  String.format("%e", target.cz()).toString()
+            ).replace(
+            "{radius}",  String.format("%e", radius).toString()
+            ).replace(
+            "{height}",  String.format("%e", height).toString()
+            ).replace(
+            "{epsilon}",  String.format("%e", epsilon).toString()
             );
 
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("ra",  target.ra(), JDBCType.DOUBLE.ordinal());
-        params.addValue("dec", target.dec(),JDBCType.DOUBLE.ordinal());
-        params.addValue("cxx",  target.cx(), JDBCType.DOUBLE.ordinal());
-        params.addValue("cyy",  target.cy(), JDBCType.DOUBLE.ordinal());
-        params.addValue("czz",  target.cz(), JDBCType.DOUBLE.ordinal());
-
-        params.addValue("radius",  radius,  JDBCType.DOUBLE.ordinal());
-        params.addValue("height",  height,  JDBCType.DOUBLE.ordinal());
-
-        params.addValue("epsilon", epsilon, JDBCType.DOUBLE.ordinal());
-        
         log.debug("querying");
-        final SqlRowSet rowset = template.queryForRowSet(
-            query,
-            params
-            );
         final List<Position> list = new ArrayList<Position>();
-        while (rowset.next())
+        try {
+            final Statement statement = connection.createStatement();
+            final ResultSet resultset = statement.executeQuery(query);
+            while (resultset.next())
+                {
+                list.add(
+                    new PositionImpl(
+                        resultset.getDouble(2),                        
+                        resultset.getDouble(3),                        
+                        resultset.getDouble(4),                        
+                        resultset.getDouble(5),                        
+                        resultset.getDouble(6)                        
+                        )
+                    );
+                }
+            }
+        catch (SQLException ouch)
             {
-            list.add(
-                new PositionImpl(
-                    rowset.getDouble(2),                        
-                    rowset.getDouble(3),                        
-                    rowset.getDouble(4),                        
-                    rowset.getDouble(5),                        
-                    rowset.getDouble(6)                        
-                    )
-                );
+            log.error("SQLException [{}]", ouch);
             }
         log.debug("done");
         return list;
@@ -351,7 +398,7 @@ public class HsqlMatcherImpl implements Matcher
     public void insert(Position position)
         {
         log.debug("preparing");
-        String query = "INSERT INTO "
+        String template = "INSERT INTO "
             + "    zones ( "
             + "        zone, "
             + "        ra, "
@@ -361,32 +408,39 @@ public class HsqlMatcherImpl implements Matcher
             + "        cz "
             + "        ) "
             + "    VALUES( "
-            + "        :zone, "
-            + "        :ra, "
-            + "        :dec, "
-            + "        :cx, "
-            + "        :cy, "
-            + "        :cz "
+            + "        {zone}, "
+            + "        {ra}, "
+            + "        {dec}, "
+            + "        {cx}, "
+            + "        {cy}, "
+            + "        {cz} "
             + "        ) ";
 
-        log.debug("source [{}]", this.source);
+        final Integer zone = (int) Math.floor((position.dec() + 90) / this.height);
 
-        final NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(
-            this.source
+        final String query = template.replace(
+            "{zone}", String.format("%d", zone).toString()
+            ).replace(
+            "{ra}",   String.format("%e", position.ra()).toString()
+            ).replace(
+            "{dec}",  String.format("%e", position.dec()).toString()
+            ).replace(
+            "{cx}",  String.format("%e", position.cx()).toString()
+            ).replace(
+            "{cy}",  String.format("%e", position.cy()).toString()
+            ).replace(
+            "{cz}",  String.format("%e", position.cz()).toString()
             );
 
-        int zone = (int) Math.floor((position.dec() + 90) / this.height);
-        
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("zone", zone);
-        params.addValue("ra",  position.ra());
-        params.addValue("dec", position.dec());
-        params.addValue("cx",  position.cx());
-        params.addValue("cy",  position.cy());
-        params.addValue("cz",  position.cz());
-            
         log.debug("inserting");
-        template.update(query, params);
+        try {
+            connection.createStatement().executeQuery(query);
+            total++;
+            }
+        catch (SQLException ouch)
+            {
+            log.error("SQLException during insert [{}]", ouch);
+            }
         log.debug("done");
         }
 
@@ -437,5 +491,13 @@ public class HsqlMatcherImpl implements Matcher
             }
         log.debug("done");
         return list;
+        }
+
+    private long total = 0;
+
+    @Override
+    public long total()
+        {
+        return total;
         }
     }

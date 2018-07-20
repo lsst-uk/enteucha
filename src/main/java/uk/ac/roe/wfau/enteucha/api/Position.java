@@ -64,6 +64,8 @@ public interface Position
 
         public Iterable<Position> verify();
 
+        public long total();
+
         }
 
     

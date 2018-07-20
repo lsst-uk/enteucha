@@ -266,3 +266,72 @@
     09:44:26.610 [main] INFO uk.ac.roe.wfau.enteucha.dataset.CQZoneImplTestCase - --------------------------
     [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 582.695 s - in uk.ac.roe.wfau.enteucha.dataset.CQZoneImplTestCase
 
+
+
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - inserting
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - inserted [4004001]
+    16:47:46.455 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - --------------------------
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - preparing
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - radius [0.002]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - height [0.018]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - ra  [1.2]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - dec [1.2]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - cx  [0.9995614150494292]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - cy  [0.02093782686459981]
+    16:47:46.455 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - cz  [0.020942419883356957]
+    16:47:46.456 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - querying
+    16:47:46.668 [main] DEBUG uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl - done
+    16:47:46.668 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - --------------------------
+    16:47:46.668 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Total inserted [4004001] in [280661]ms avg [0.07009514]ms
+    16:47:46.668 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - --------------------------
+    16:47:46.668 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.199][1.199]
+    16:47:46.668 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.199][1.2]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.199][1.201]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.2][1.199]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.2][1.2]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.2][1.201]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.201][1.199]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.201][1.2]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.201][1.201]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Found [1.202][1.2]
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - --------------------------
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - Total found [10] in [213]ms
+    16:47:46.669 [main] INFO uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImplTestCase - --------------------------
+
+    #
+    # Total found [11] in [17]ms
+    # CQZoneImpl with indexes on CQZoneImpl.POS_RA and CQZoneImpl.POS_DEC
+    # CQZoneImpl.ZoneSet with index on CQZoneImpl.ZONE_ID
+    # Separate steps to the query ..
+    # Use debug to work out which step is the most expensive ... ?
+    #    
+
+    #
+    # Total found [10] in [213]ms
+    # HsqlMatcherImpl with indexes on ra, dec, radec, zone, zoneradec ...
+    # Insert is fast, query is slow.
+    # Is it actually using the indexes ?
+    #
+    # Everything is in one huge table ...
+    # Should we split the queriy into separate sub-queires.
+    #
+
+
+
+

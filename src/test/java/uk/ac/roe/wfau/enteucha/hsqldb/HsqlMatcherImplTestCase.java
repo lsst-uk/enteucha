@@ -83,7 +83,7 @@ public class HsqlMatcherImplTestCase extends TestCase
      * Test finding things.
      * 
      */
-    public void frogFindMatchesSmall()
+    public void testFindMatchesSmall()
         {
         final Matcher matcher = new HsqlMatcherImpl(1000);
         matcher.init();
@@ -115,7 +115,8 @@ public class HsqlMatcherImplTestCase extends TestCase
      */
     public void testFindMatchesLarge()
         {
-        Matcher matcher = new HsqlMatcherImpl(10000);
+        long a = System.currentTimeMillis();
+        final Matcher matcher = new HsqlMatcherImpl(10000);
         matcher.init();
         this.init(
             matcher,
@@ -123,6 +124,11 @@ public class HsqlMatcherImplTestCase extends TestCase
             2.0,
             0.001
             );
+        long b = System.currentTimeMillis();
+
+        log.info("--------------------------");
+
+        long c = System.currentTimeMillis();
         final Iterable<Position> matches = matcher.matches(
             new PositionImpl(
                 1.20,
@@ -130,13 +136,20 @@ public class HsqlMatcherImplTestCase extends TestCase
                 ),
             0.002
             );
+        long d = System.currentTimeMillis();
+
+        log.info("--------------------------");
+        log.info("Total inserted [{}] in [{}]ms avg [{}]ms", matcher.total(), (b-a),((float)(b-a)/(float)matcher.total()) );
+        log.info("--------------------------");
         int count = 0 ;
         for (Position match : matches)
             {
             log.info("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
-        log.info("Count [{}]",count);
+        log.info("--------------------------");
+        log.info("Total found [{}] in [{}]ms", count, (d-c));
+        log.info("--------------------------");
         }
     
     

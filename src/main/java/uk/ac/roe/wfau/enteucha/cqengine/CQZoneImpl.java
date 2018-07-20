@@ -192,7 +192,6 @@ public class CQZoneImpl implements Zone
         @Override
         public Iterable<Position> verify()
             {
-            // TODO Auto-generated method stub
             return null;
             }
         }
@@ -448,6 +447,13 @@ public class CQZoneImpl implements Zone
         {
         // TODO Auto-generated method stub
         return null;
+        }
+
+    @Override
+    public long total()
+        {
+        // TODO Auto-generated method stub
+        return 0;
         }
     }
 
