@@ -20,17 +20,13 @@ package uk.ac.roe.wfau.enteucha.hsqldb;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
-import java.sql.JDBCType;
-import java.sql.ResultSet;
 
 import javax.sql.DataSource;
-import javax.sql.RowSet;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -126,7 +122,7 @@ public class HsqlMatcherImpl implements Matcher
      */
     public String url()
         {
-        log.debug("url()");
+        //log.debug("url()");
         final StringBuilder builder = new StringBuilder(
             "jdbc:hsqldb"
             ); 
@@ -144,7 +140,7 @@ public class HsqlMatcherImpl implements Matcher
                 "Unknown database type [" + this.databasetype() + "]"
                 );
             }
-        log.debug("url() [{}]", builder.toString());
+        //log.debug("url() [{}]", builder.toString());
         return builder.toString();
         }
 
@@ -169,10 +165,10 @@ public class HsqlMatcherImpl implements Matcher
      */
     protected DataSource source()
         {
-        log.debug("source()");
-        log.debug(" databasehost [{}]", databasehost());
-        log.debug(" databaseport [{}]", databaseport());
-        log.debug(" databasename [{}]", databasename());
+        //log.debug("source()");
+        //log.debug(" databasehost [{}]", databasehost());
+        //log.debug(" databaseport [{}]", databaseport());
+        //log.debug(" databasename [{}]", databasename());
         //log.debug(" databaseuser [{}]", databaseuser());
         //log.debug(" databasepass [{}]", databasepass());
         if (null == this.source)
@@ -184,7 +180,7 @@ public class HsqlMatcherImpl implements Matcher
                 //this.databasepass()
                 );            
             }
-        log.debug("source [{}]", this.source);
+        //log.debug("source [{}]", this.source);
         return this.source;
         }
 
@@ -202,14 +198,14 @@ public class HsqlMatcherImpl implements Matcher
     protected Connection connect()
     throws SQLException
         {
-        log.debug("connect()");
+        //log.debug("connect()");
         if (null == this.connection)
             {
             this.connection = this.source().getConnection();
             }
 
-        log.debug("source [{}]",     this.source);
-        log.debug("connection [{}]", this.connection);
+        //log.debug("source [{}]",     this.source);
+        //log.debug("connection [{}]", this.connection);
         return this.connection; 
         }
 
@@ -220,7 +216,7 @@ public class HsqlMatcherImpl implements Matcher
      */
     public void init()
         {
-        log.debug("init");
+        //log.debug("init");
         try {
             this.connect();
     
@@ -397,7 +393,7 @@ public class HsqlMatcherImpl implements Matcher
     @Override
     public void insert(Position position)
         {
-        log.debug("preparing");
+        //log.debug("preparing");
         String template = "INSERT INTO "
             + "    zones ( "
             + "        zone, "
@@ -432,7 +428,7 @@ public class HsqlMatcherImpl implements Matcher
             "{cz}",  String.format("%e", position.cz()).toString()
             );
 
-        log.debug("inserting");
+        //log.debug("inserting");
         try {
             connection.createStatement().executeQuery(query);
             total++;
@@ -441,7 +437,7 @@ public class HsqlMatcherImpl implements Matcher
             {
             log.error("SQLException during insert [{}]", ouch);
             }
-        log.debug("done");
+        //log.debug("done");
         }
 
     public Iterable<Position> verify()

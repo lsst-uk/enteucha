@@ -16,20 +16,21 @@
  *
  */
 
-package uk.ac.roe.wfau.enteucha.api;
+package uk.ac.roe.wfau.enteucha.cqengine;
 
+import uk.ac.roe.wfau.enteucha.api.Position;
 import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
 
 /**
  * Public interface for a declination stripe.
  * 
  */
-public interface Zone
+public interface CQZone
 extends Matcher
     {
 
     /**
-     * Public interface for a set of {@link Zone}s.
+     * Public interface for a set of {@link CQZone}s.
      * 
      *
      */
@@ -37,10 +38,10 @@ extends Matcher
     extends Matcher
         {
         /**
-         * Select a set of {@link Zone}s that contain {@link Position}s within a radius around a target {@link Position}.
+         * Select a set of {@link CQZone}s that contain {@link Position}s within a radius around a target {@link Position}.
          * 
          */
-        public Iterable<Zone> contains(final Position target, final Double radius);
+        public Iterable<CQZone> contains(final Position target, final Double radius);
 
         /**
          * The total number of {@link Position}s in this {@link ZoneSet}
@@ -57,7 +58,7 @@ extends Matcher
     public int ident();
 
     /**
-     * Get the count of {@link Position}s in this {@link Zone}.
+     * Get the count of {@link Position}s in this {@link CQZone}.
      * 
      */
     public int count();

@@ -18,18 +18,17 @@
 
 package uk.ac.roe.wfau.enteucha.hsqldb;
 
-import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.Position;
+import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
 import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
-import uk.ac.roe.wfau.enteucha.api.PositionImpl;
 
 /**
  * 
  * 
  */
 @Slf4j
-public class HsqlMatcherImplTestCase extends TestCase
+public class HsqlMatcherImplTestCase
+extends AbstractTestCase
     {
 
     /**
@@ -37,141 +36,13 @@ public class HsqlMatcherImplTestCase extends TestCase
      */
     public HsqlMatcherImplTestCase()
         {
+        super();
         }
 
-    /**
-     * Initialise our data.
-     * 
-     */
-    public Matcher init(final Matcher matcher, double min, double max, double step)
+    @Override
+    public Matcher matcher()
         {
-        int count = 0 ;
-        for (double i = min ; i < max ; i += step)
-            {
-            for (double j = min ; j < max ; j += step)
-                {
-                matcher.insert(
-                    new PositionImpl(
-                        i,
-                        j
-                        )
-                    );
-                count++;
-                }
-            }
-        log.debug("inserted [{}]", count);
-        return matcher;
-        }
-
-    /**
-     * Test adding things.
-     * 
-     */
-    public void frogAddPositions()
-        {
-        final Matcher matcher = new HsqlMatcherImpl(1000);
-        matcher.init();
-        this.init(
-            matcher,
-           -2.0,
-            2.0,
-            0.125
-            );
-        }
-
-    /**
-     * Test finding things.
-     * 
-     */
-    public void testFindMatchesSmall()
-        {
-        final Matcher matcher = new HsqlMatcherImpl(1000);
-        matcher.init();
-        this.init(
-            matcher,
-           -2.0,
-            2.0,
-            0.125
-            );
-        final Iterable<Position> matches = matcher.matches(
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.25
-            );
-        int count = 0 ;
-        for (Position match : matches)
-            {
-            log.info("Found [{}][{}]", match.ra(), match.dec());
-            count++;
-            }
-        log.info("Count [{}]",count);
-        }
-
-    /**
-     * Test finding things.
-     * 
-     */
-    public void testFindMatchesLarge()
-        {
-        long a = System.currentTimeMillis();
-        final Matcher matcher = new HsqlMatcherImpl(10000);
-        matcher.init();
-        this.init(
-            matcher,
-            0.0,
-            2.0,
-            0.001
-            );
-        long b = System.currentTimeMillis();
-
-        log.info("--------------------------");
-
-        long c = System.currentTimeMillis();
-        final Iterable<Position> matches = matcher.matches(
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.002
-            );
-        long d = System.currentTimeMillis();
-
-        log.info("--------------------------");
-        log.info("Total inserted [{}] in [{}]ms avg [{}]ms", matcher.total(), (b-a),((float)(b-a)/(float)matcher.total()) );
-        log.info("--------------------------");
-        int count = 0 ;
-        for (Position match : matches)
-            {
-            log.info("Found [{}][{}]", match.ra(), match.dec());
-            count++;
-            }
-        log.info("--------------------------");
-        log.info("Total found [{}] in [{}]ms", count, (d-c));
-        log.info("--------------------------");
+        return new HsqlMatcherImpl(1000);
         }
     
-    
-    
-    public void frogSmall()
-        {
-        final Matcher matcher = new HsqlMatcherImpl(1000);
-        matcher.init();
-        this.init(
-            matcher,
-           -2.0,
-            2.0,
-            0.125
-            );
-        final Iterable<Position> matches = matcher.verify();
-        int count = 0 ;
-        for (Position match : matches)
-            {
-            log.info("Found [{}][{}]", match.ra(), match.dec());
-            count++;
-            }
-        log.info("Count [{}]",count);
-        }
-
     }

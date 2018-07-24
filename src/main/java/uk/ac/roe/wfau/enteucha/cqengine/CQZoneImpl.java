@@ -35,15 +35,15 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.Position;
 import uk.ac.roe.wfau.enteucha.api.PositionImpl;
-import uk.ac.roe.wfau.enteucha.api.Zone;
 import uk.ac.roe.wfau.enteucha.util.GenericIterable;
 
 /**
- * A CQEngine based implementation of {@link Zone}
+ * A CQEngine based implementation of {@link CQZone}
  * 
  */
 @Slf4j
-public class CQZoneImpl implements Zone
+public class CQZoneImpl
+implements CQZone
     {
 
     /**
@@ -53,12 +53,12 @@ public class CQZoneImpl implements Zone
     protected static final double epsilon = 10E-6;
     
     /**
-     * A CQEngine based implementation of {@link Zone.ZoneSet}
+     * A CQEngine based implementation of {@link CQZone.ZoneSet}
      * 
      */
     @Slf4j
     public static class ZoneSet
-    implements Zone.ZoneSet
+    implements CQZone.ZoneSet
         {
         private int count = 0 ;
         private double height ;
@@ -74,7 +74,7 @@ public class CQZoneImpl implements Zone
             }
         
         @Override
-        public Iterable<Zone> contains(final Position target, final Double radius)
+        public Iterable<CQZone> contains(final Position target, final Double radius)
             {
             log.debug("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
@@ -86,7 +86,7 @@ public class CQZoneImpl implements Zone
             final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
             final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
 
-            return new GenericIterable<Zone, CQZoneImpl>(
+            return new GenericIterable<CQZone, CQZoneImpl>(
                 between(
                     min,
                     max
@@ -117,9 +117,9 @@ public class CQZoneImpl implements Zone
          * Creates a new zone if needed.  
          * 
          */
-        protected Zone select(final Integer ident)
+        protected CQZone select(final Integer ident)
             {
-            log.debug("select() [{}]", ident);
+            //log.debug("select() [{}]", ident);
             final Iterator<CQZoneImpl> iter = zones.retrieve(
                 QueryFactory.equal(
                     CQZoneImpl.ZONE_ID,
@@ -135,13 +135,13 @@ public class CQZoneImpl implements Zone
                     ident
                     ) ;
                 zones.add(temp);
-                log.debug("New zone [{}][{}]", temp.ident(), zones.size());
+                //log.debug("New zone [{}][{}]", temp.ident(), zones.size());
                 return temp ;
                 }
             }
 
         /**
-         * Our collection of {@link Zone}s, indexed by {@link CQZoneImpl.ZONE_ID}. 
+         * Our collection of {@link CQZone}s, indexed by {@link CQZoneImpl.ZONE_ID}. 
          * 
          */
         private final IndexedCollection<CQZoneImpl> zones = new ConcurrentIndexedCollection<CQZoneImpl>(
@@ -155,7 +155,7 @@ public class CQZoneImpl implements Zone
             {
             log.debug("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
             final List<Position> list = new ArrayList<Position>(100);  
-            for (Zone zone : contains(target, radius))
+            for (CQZone zone : contains(target, radius))
                 {
                 log.debug("Checking zone [{}][{}]", zone.ident(), zone.count());
                 for (Position match : zone.matches(target, radius))
@@ -172,16 +172,16 @@ public class CQZoneImpl implements Zone
         @Override
         public void insert(final Position position)
             {
-            log.debug("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
-            final Zone zone = select(
+            //log.debug("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
+            final CQZone zone = select(
                     (int) Math.floor((position.dec() + 90) / this.height)
                     );
-            log.debug("Zone [{}]", zone.ident());
+            //log.debug("Zone [{}]", zone.ident());
             zone.insert(
                 position
                 );
             total++;
-            log.debug("Added [{}][{}]", zone.count(), total);
+            //log.debug("Added [{}][{}]", zone.count(), total);
             }
 
         public long total()
@@ -274,11 +274,11 @@ public class CQZoneImpl implements Zone
                         {
                         for (int count = 0 ; iter.hasNext(); count++)
                             {
-                            log.debug("loop [{}]", count);
+                            //log.debug("loop [{}]", count);
                             final Position temp = iter.next();
                             if (match(target, radius, temp))
                                 {
-                                log.debug("found   [{}][{}]", temp.ra(), temp.dec());
+                                //log.debug("found   [{}][{}]", temp.ra(), temp.dec());
                                 return temp ;
                                 }
                             }

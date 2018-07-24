@@ -62,8 +62,13 @@ public interface Position
          */
         public void insert(final Position position);
 
+        
         public Iterable<Position> verify();
 
+        /**
+         * Get the total number of positions in this {@link Matcher}. 
+         * 
+         */
         public long total();
 
         }
