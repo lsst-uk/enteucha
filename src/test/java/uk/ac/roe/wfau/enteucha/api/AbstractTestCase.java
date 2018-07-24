@@ -173,7 +173,7 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void testFind003()
+    public void xestFind003()
         {
         log.debug("Setting up test");
         final Matcher matcher = this.init(
@@ -190,6 +190,30 @@ extends TestCase
                 1.20
                 ),
             0.025
+            );
+        }
+
+    /**
+     * Test finding things.
+     * 
+     */
+    public void testFind004()
+        {
+        log.debug("Setting up test");
+        final Matcher matcher = this.init(
+            this.matcher(),
+           -2.0,
+            2.0,
+            0.0025
+            );
+        log.debug("Running crossmatch");
+        this.match(
+            matcher,
+            new PositionImpl(
+                1.20,
+                1.20
+                ),
+            0.0025
             );
         }
     }

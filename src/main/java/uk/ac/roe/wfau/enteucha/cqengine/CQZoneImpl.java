@@ -100,7 +100,7 @@ implements CQZone
          */
         protected ResultSet<CQZoneImpl> between(final Integer min, final Integer max)
             {
-            log.debug("between() [{}][{}]", min, max);
+            log.trace("between() [{}][{}]", min, max);
             return zones.retrieve(
                 QueryFactory.between(
                     CQZoneImpl.ZONE_ID,
@@ -119,7 +119,7 @@ implements CQZone
          */
         protected CQZone select(final Integer ident)
             {
-            //log.debug("select() [{}]", ident);
+            log.trace("select() [{}]", ident);
             final Iterator<CQZoneImpl> iter = zones.retrieve(
                 QueryFactory.equal(
                     CQZoneImpl.ZONE_ID,
@@ -135,7 +135,7 @@ implements CQZone
                     ident
                     ) ;
                 zones.add(temp);
-                //log.debug("New zone [{}][{}]", temp.ident(), zones.size());
+                log.trace("New zone [{}][{}]", temp.ident(), zones.size());
                 return temp ;
                 }
             }
@@ -153,14 +153,14 @@ implements CQZone
         @Override
         public Iterable<Position> matches(Position target, Double radius)
             {
-            log.debug("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
+            log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
             final List<Position> list = new ArrayList<Position>(100);  
             for (CQZone zone : contains(target, radius))
                 {
-                log.debug("Checking zone [{}][{}]", zone.ident(), zone.count());
+                log.trace("Checking zone [{}][{}]", zone.ident(), zone.count());
                 for (Position match : zone.matches(target, radius))
                     {
-                    //log.debug("Found match [{}][{}]", match.ra(), match.dec());
+                    log.trace("Found match [{}][{}]", match.ra(), match.dec());
                     list.add(match);
                     }
                 }
@@ -172,16 +172,16 @@ implements CQZone
         @Override
         public void insert(final Position position)
             {
-            //log.debug("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
+            log.trace("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
             final CQZone zone = select(
                     (int) Math.floor((position.dec() + 90) / this.height)
                     );
-            //log.debug("Zone [{}]", zone.ident());
+            log.trace("Zone [{}]", zone.ident());
             zone.insert(
                 position
                 );
             total++;
-            //log.debug("Added [{}][{}]", zone.count(), total);
+            log.trace("Added [{}][{}]", zone.count(), total);
             }
 
         public long total()
@@ -215,7 +215,7 @@ implements CQZone
     @Override
     public Iterable<Position> matches(final Position target, final Double radius)
         {
-        log.debug("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
+        log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
         return filter(
             target,
             radius,
@@ -228,7 +228,7 @@ implements CQZone
 
     protected boolean match(final Position target, final Double radius, final Position pos)
         {
-        log.debug("match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
+        log.trace("match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
         double squares =
                 Math.pow(
                     pos.cx() - target.cx(),
@@ -243,7 +243,7 @@ implements CQZone
                   2
                   ) 
                 ;
-        double range = 4 * (
+        double squaresin = 4 * (
                 Math.pow(
                     Math.sin(
                         Math.toRadians(
@@ -253,8 +253,8 @@ implements CQZone
                     2)
                 );
 
-        boolean result = (range > squares) ;
-        log.debug("compare [{}]>[{}]=[{}]", range, squares, result);
+        boolean result = (squaresin > squares) ;
+        log.trace("compare [{}]>[{}]=[{}]", squaresin, squares, result);
         return result;
         }
     
@@ -274,11 +274,11 @@ implements CQZone
                         {
                         for (int count = 0 ; iter.hasNext(); count++)
                             {
-                            //log.debug("loop [{}]", count);
+                            log.trace("loop [{}]", count);
                             final Position temp = iter.next();
                             if (match(target, radius, temp))
                                 {
-                                //log.debug("found   [{}][{}]", temp.ra(), temp.dec());
+                                log.trace("found   [{}][{}]", temp.ra(), temp.dec());
                                 return temp ;
                                 }
                             }
@@ -351,7 +351,7 @@ implements CQZone
     @Override
     public void insert(final Position position)
         {
-        log.debug("insert() [{}][{}]", position.ra(), position.dec());
+        log.trace("insert() [{}][{}]", position.ra(), position.dec());
         if (position instanceof PositionImpl)
             {
             positions.add(

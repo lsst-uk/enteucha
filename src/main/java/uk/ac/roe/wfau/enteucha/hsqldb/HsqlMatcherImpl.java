@@ -20,6 +20,8 @@ package uk.ac.roe.wfau.enteucha.hsqldb;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -219,6 +221,10 @@ public class HsqlMatcherImpl implements Matcher
         //log.debug("init");
         try {
             this.connect();
+
+            this.connection.createStatement().executeUpdate(
+                    "DROP TABLE zones IF EXISTS"
+                    );
     
             this.connection.createStatement().executeUpdate(
                 "CREATE TABLE zones ("
@@ -330,45 +336,62 @@ public class HsqlMatcherImpl implements Matcher
             + "    zones "
             + " WHERE "
             + "    zone BETWEEN "
-            + "        floor(({dec} + 90 - {radius}) / {height}) "
+            + "        ? "
             + "    AND "
-            + "        floor(({dec} + 90 + {radius}) / {height}) "
+            + "        ? "
             + " AND "
             + "    ra BETWEEN "
-            + "        ({ra} - {radius})/(cos(radians(abs({dec}))) + {epsilon}) "
+            + "        ? "
             + "    AND "
-            + "        ({ra} + {radius})/(cos(radians(abs({dec}))) + {epsilon}) "
+            + "        ? "
             + " AND "
             + "    dec BETWEEN "
-            + "        {dec} - {radius} "
+            + "        ? "
             + "    AND "
-            + "        {dec} + {radius} "
+            + "        ? "
             + "    AND  "
-            + "        (4 * power(sin(radians({radius} / 2)),2)) > (power((cx - {cx}), 2) + power((cy - {cy}), 2) + power(cz - {cz}, 2)) ";
+            + "        ? > (power((cx - ?), 2) + power((cy - ?), 2) + power(cz - ?, 2)) ";
 
-        final String query = template.replace(
-            "{ra}",   String.format("%e", target.ra()).toString()
-            ).replace(
-            "{dec}",  String.format("%e", target.dec()).toString()
-            ).replace(
-            "{cx}",  String.format("%e", target.cx()).toString()
-            ).replace(
-            "{cy}",  String.format("%e", target.cy()).toString()
-            ).replace(
-            "{cz}",  String.format("%e", target.cz()).toString()
-            ).replace(
-            "{radius}",  String.format("%e", radius).toString()
-            ).replace(
-            "{height}",  String.format("%e", height).toString()
-            ).replace(
-            "{epsilon}",  String.format("%e", epsilon).toString()
-            );
+        final Integer minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
+        final Integer maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
+        
+        double minra = (target.ra() - radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
+        double maxra = (target.ra() + radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
 
+        double mindec = (target.dec() - radius) ; 
+        double maxdec = (target.dec() + radius) ; 
+
+        double squaresin = 4 * (
+                Math.pow(
+                    Math.sin(
+                        Math.toRadians(
+                            radius
+                            )/2
+                        ),
+                    2)
+                );
+        
         log.debug("querying");
         final List<Position> list = new ArrayList<Position>();
         try {
-            final Statement statement = connection.createStatement();
-            final ResultSet resultset = statement.executeQuery(query);
+            final PreparedStatement statement = connection.prepareStatement(template);
+
+            statement.setDouble(1, minzone);
+            statement.setDouble(2, maxzone);            
+            
+            statement.setDouble(3, minra);
+            statement.setDouble(4, maxra);
+
+            statement.setDouble(5, mindec);
+            statement.setDouble(6, maxdec);
+
+            statement.setDouble(7, squaresin);            
+
+            statement.setDouble(8,  target.cx());            
+            statement.setDouble(9,  target.cy());            
+            statement.setDouble(10, target.cz());            
+            
+            final ResultSet resultset = statement.executeQuery();
             while (resultset.next())
                 {
                 list.add(
@@ -393,7 +416,7 @@ public class HsqlMatcherImpl implements Matcher
     @Override
     public void insert(Position position)
         {
-        //log.debug("preparing");
+        log.trace("insert() [{}][{}]", position.ra(), position.dec());
         String template = "INSERT INTO "
             + "    zones ( "
             + "        zone, "
@@ -404,40 +427,31 @@ public class HsqlMatcherImpl implements Matcher
             + "        cz "
             + "        ) "
             + "    VALUES( "
-            + "        {zone}, "
-            + "        {ra}, "
-            + "        {dec}, "
-            + "        {cx}, "
-            + "        {cy}, "
-            + "        {cz} "
+            + "        ?, "
+            + "        ?, "
+            + "        ?, "
+            + "        ?, "
+            + "        ?, "
+            + "        ?"
             + "        ) ";
 
         final Integer zone = (int) Math.floor((position.dec() + 90) / this.height);
 
-        final String query = template.replace(
-            "{zone}", String.format("%d", zone).toString()
-            ).replace(
-            "{ra}",   String.format("%e", position.ra()).toString()
-            ).replace(
-            "{dec}",  String.format("%e", position.dec()).toString()
-            ).replace(
-            "{cx}",  String.format("%e", position.cx()).toString()
-            ).replace(
-            "{cy}",  String.format("%e", position.cy()).toString()
-            ).replace(
-            "{cz}",  String.format("%e", position.cz()).toString()
-            );
-
-        //log.debug("inserting");
         try {
-            connection.createStatement().executeQuery(query);
+            final PreparedStatement statement = connection.prepareStatement(template);
+            statement.setInt(1, zone);
+            statement.setDouble(2, position.ra());
+            statement.setDouble(3, position.dec());
+            statement.setDouble(4, position.cx());
+            statement.setDouble(5, position.cy());
+            statement.setDouble(6, position.cz());
+            statement.execute();
             total++;
             }
         catch (SQLException ouch)
             {
             log.error("SQLException during insert [{}]", ouch);
             }
-        //log.debug("done");
         }
 
     public Iterable<Position> verify()

@@ -33,7 +33,6 @@ EOF
 
 
     source "${HOME:?}/enteucha.settings"
-
     if [ ! -e "${ENTEUCHA_CODE:?}" ]
     then
 
@@ -52,6 +51,7 @@ EOF
     fi
 
 
+    source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
         mvn clean install
     popd
