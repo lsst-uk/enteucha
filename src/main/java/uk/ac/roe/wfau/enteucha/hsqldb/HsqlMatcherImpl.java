@@ -53,8 +53,38 @@ public class HsqlMatcherImpl implements Matcher
      */
     public HsqlMatcherImpl(int count)
         {
+        this(
+            IndexingShape.SEPARATE,
+            count
+            ) ;
+        }
+    
+    /**
+     * Public constructor.
+     * 
+     */
+    public HsqlMatcherImpl(final IndexingShape indexing, int count)
+        {
+        this.indexing = indexing;
         this.height = 180.0 / (double) count ;
         }
+
+    /**
+     * Indexing shape.
+     * 
+     */
+    public enum IndexingShape
+        {
+        SEPARATE(),
+        COMBINED(),
+        COMPLEX();
+        };
+
+    /**
+     * The {@link IndexingShape} for this {@link Matcher}.
+     * 
+     */
+    private IndexingShape indexing ;
 
     /**
      * The matcher database type.
@@ -124,7 +154,7 @@ public class HsqlMatcherImpl implements Matcher
      */
     public String url()
         {
-        //log.debug("url()");
+        log.trace("url()");
         final StringBuilder builder = new StringBuilder(
             "jdbc:hsqldb"
             ); 
@@ -142,7 +172,7 @@ public class HsqlMatcherImpl implements Matcher
                 "Unknown database type [" + this.databasetype() + "]"
                 );
             }
-        //log.debug("url() [{}]", builder.toString());
+        log.trace("url() [{}]", builder.toString());
         return builder.toString();
         }
 
@@ -167,10 +197,10 @@ public class HsqlMatcherImpl implements Matcher
      */
     protected DataSource source()
         {
-        //log.debug("source()");
-        //log.debug(" databasehost [{}]", databasehost());
-        //log.debug(" databaseport [{}]", databaseport());
-        //log.debug(" databasename [{}]", databasename());
+        log.trace("source()");
+        log.trace(" databasehost [{}]", databasehost());
+        log.trace(" databaseport [{}]", databaseport());
+        log.trace(" databasename [{}]", databasename());
         //log.debug(" databaseuser [{}]", databaseuser());
         //log.debug(" databasepass [{}]", databasepass());
         if (null == this.source)
@@ -182,7 +212,7 @@ public class HsqlMatcherImpl implements Matcher
                 //this.databasepass()
                 );            
             }
-        //log.debug("source [{}]", this.source);
+        log.trace("source [{}]", this.source);
         return this.source;
         }
 
@@ -200,14 +230,14 @@ public class HsqlMatcherImpl implements Matcher
     protected Connection connect()
     throws SQLException
         {
-        //log.debug("connect()");
+        log.trace("connect()");
         if (null == this.connection)
             {
             this.connection = this.source().getConnection();
             }
 
-        //log.debug("source [{}]",     this.source);
-        //log.debug("connection [{}]", this.connection);
+        log.trace("source [{}]",     this.source);
+        log.trace("connection [{}]", this.connection);
         return this.connection; 
         }
 
@@ -218,14 +248,13 @@ public class HsqlMatcherImpl implements Matcher
      */
     public void init()
         {
-        //log.debug("init");
+        log.trace("init");
         try {
             this.connect();
 
             this.connection.createStatement().executeUpdate(
                     "DROP TABLE zones IF EXISTS"
                     );
-    
             this.connection.createStatement().executeUpdate(
                 "CREATE TABLE zones ("
                 + "zone INT NOT NULL, "
@@ -236,45 +265,61 @@ public class HsqlMatcherImpl implements Matcher
                 + "cz  DOUBLE NOT NULL  "
                 + ")"
                 );
+            switch (this.indexing)
+                {
+                case SEPARATE:
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX zoneindex "
+                        + " ON zones ("
+                        + "    zone"
+                        + ")"
+                        );
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX raindex "
+                        + " ON zones ("
+                        + "    ra"
+                        + ")"
+                        );
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX decindex"
+                        + " ON zones ("
+                        + "    dec"
+                        + ")"
+                        );
+                    break ;
 
-            this.connection.createStatement().executeUpdate(
-                "CREATE INDEX zoneidx "
-                + "ON zones ("
-                + "    zone"
-                + ")"
-                );
+                case COMBINED:
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX zoneindex "
+                        + " ON zones ("
+                        + "    zone"
+                        + ")"
+                        );
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX radecindex"
+                        + " ON zones ("
+                        + "    ra,"
+                        + "    dec"
+                        + ")"
+                        );
+                    break ;
 
-            this.connection.createStatement().executeUpdate(
-                "CREATE INDEX zoneradidx "
-                + "ON zones ("
-                + "    zone,"
-                + "    ra,"
-                + "    dec"
-                + ")"
-                );
-
-            this.connection.createStatement().executeUpdate(
-                "CREATE INDEX radidx "
-                + "ON zones ("
-                + "    ra,"
-                + "    dec"
-                + ")"
-                );
-
-            this.connection.createStatement().executeUpdate(
-                "CREATE INDEX raidx "
-                + "ON zones ("
-                + "    ra"
-                + ")"
-                );
-
-            this.connection.createStatement().executeUpdate(
-                "CREATE INDEX decidx "
-                + "ON zones ("
-                + "    dec"
-                + ")"
-                );
-
+                case COMPLEX:
+                    this.connection.createStatement().executeUpdate(
+                        "CREATE INDEX complexindex"
+                        + " ON zones ("
+                        + "    zone,"
+                        + "    ra,"
+                        + "    dec"
+                        + ")"
+                        );
+                break ;
+                    
+                default :
+                    throw new IllegalArgumentException(
+                        "Unknown indexing shape [{" + this.indexing.name() + "}]"
+                        ); 
+                }
             }
         catch (final SQLException ouch)
             {
@@ -352,8 +397,8 @@ public class HsqlMatcherImpl implements Matcher
             + "    AND  "
             + "        ? > (power((cx - ?), 2) + power((cy - ?), 2) + power(cz - ?, 2)) ";
 
-        final Integer minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
-        final Integer maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
+        final int minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
+        final int maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
         
         double minra = (target.ra() - radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
         double maxra = (target.ra() + radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
@@ -371,13 +416,14 @@ public class HsqlMatcherImpl implements Matcher
                     2)
                 );
         
-        log.debug("querying");
         final List<Position> list = new ArrayList<Position>();
         try {
+            log.debug("preparing");
             final PreparedStatement statement = connection.prepareStatement(template);
 
-            statement.setDouble(1, minzone);
-            statement.setDouble(2, maxzone);            
+            log.debug("setting");
+            statement.setInt(1, minzone);
+            statement.setInt(2, maxzone);            
             
             statement.setDouble(3, minra);
             statement.setDouble(4, maxra);
@@ -391,6 +437,7 @@ public class HsqlMatcherImpl implements Matcher
             statement.setDouble(9,  target.cy());            
             statement.setDouble(10, target.cz());            
             
+            log.debug("executing");
             final ResultSet resultset = statement.executeQuery();
             while (resultset.next())
                 {

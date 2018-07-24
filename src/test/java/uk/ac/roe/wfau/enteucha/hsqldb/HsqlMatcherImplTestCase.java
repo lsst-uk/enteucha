@@ -20,7 +20,9 @@ package uk.ac.roe.wfau.enteucha.hsqldb;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
+import uk.ac.roe.wfau.enteucha.api.PositionImpl;
 import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
+import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
 
 /**
  * 
@@ -31,18 +33,41 @@ public class HsqlMatcherImplTestCase
 extends AbstractTestCase
     {
 
-    /**
-     * 
-     */
     public HsqlMatcherImplTestCase()
         {
         super();
         }
 
+    /**
+     * The {@link IndexingShape} for this {@link TestCase}.
+     * 
+     */
+    private IndexingShape indexing ;
+    
+    
     @Override
     public Matcher matcher()
         {
-        return new HsqlMatcherImpl(1000);
+        return new HsqlMatcherImpl(
+            indexing ,
+            1000
+            );
         }
+
     
+    /**
+     * Test finding things.
+     * 
+     */
+    public void testFind004()
+        {
+        this.indexing = IndexingShape.SEPARATE;
+        find004();
+        
+        this.indexing = IndexingShape.COMBINED;
+        find004();
+
+        this.indexing = IndexingShape.COMPLEX;
+        find004();
+        }
     }

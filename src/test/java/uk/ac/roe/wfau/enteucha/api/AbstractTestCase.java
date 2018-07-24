@@ -84,7 +84,7 @@ extends TestCase
      * Test our {@link Matcher}.
      * 
      */
-    public Iterable<Position> match(final Matcher matcher, final Position target, Double radius) 
+    public long match(final Matcher matcher, final Position target, Double radius) 
         {
         log.debug("---- ---- ---- ----");
         log.debug("Starting crossmatch");
@@ -93,39 +93,26 @@ extends TestCase
             target,
             radius
             );
-        long end = System.currentTimeMillis();
-        log.debug("---- ---- ---- ----");
-        log.debug("Finished crossmatch");
         int count = 0 ;
         for (Position match : matches)
             {
             log.info("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
-        log.info("Found [{}] in [{}ms]", count, (end - start));
+        long end = System.currentTimeMillis();
+        long diff = end - start ;
         log.debug("---- ---- ---- ----");
-        return matches ;
-        }
-
-    /**
-     * Test adding things.
-     * 
-     */
-    public void xestInit()
-        {
-        final Matcher matcher = this.init(
-            this.matcher(),
-           -2.0,
-            2.0,
-            0.25
-            );
+        log.debug("Finished crossmatch");
+        log.debug("Found [{}] in [{}ms]", count, diff);
+        log.debug("---- ---- ---- ----");
+        return diff ;
         }
 
     /**
      * Test finding things.
      * 
      */
-    public void xestFind001()
+    public void find001()
         {
         log.debug("Setting up test");
         final Matcher matcher = this.init(
@@ -149,7 +136,7 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void xestFind002()
+    public void find002()
         {
         log.debug("Setting up test");
         final Matcher matcher = this.init(
@@ -173,7 +160,7 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void xestFind003()
+    public void find003()
         {
         log.debug("Setting up test");
         final Matcher matcher = this.init(
@@ -197,7 +184,7 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void testFind004()
+    public void find004()
         {
         log.debug("Setting up test");
         final Matcher matcher = this.init(
@@ -206,15 +193,21 @@ extends TestCase
             2.0,
             0.0025
             );
-        log.debug("Running crossmatch");
-        this.match(
-            matcher,
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.0025
-            );
+        long time = 0 ;
+        long count;
+        for(count = 0 ; count < 4 ; count++)
+            {
+            log.debug("Running crossmatch");
+            time += this.match(
+                matcher,
+                new PositionImpl(
+                    1.20,
+                    1.20
+                    ),
+                0.0025
+                );
+            }
+        log.debug("[{}] matches in [{}], avg [{}]", count, time, (time/count));
         }
     }
 
