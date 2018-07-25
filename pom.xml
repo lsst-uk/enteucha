@@ -355,7 +355,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
                 <configuration>
-                    <argLine>-Xmx12g -Xms8g</argLine>
+                    <!--argLine>-Xmx12g -Xms8g</argLine-->
                 </configuration>
             </plugin>
             <plugin>

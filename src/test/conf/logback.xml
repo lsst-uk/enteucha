@@ -36,7 +36,7 @@
         | Debug logging sent to log file.
         +-->
     <appender name="debug-log" class="ch.qos.logback.core.FileAppender">
-        <file>enteucha-debug.log</file>
+        <file>target/enteucha-debug.log</file>
         <append>true</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
           <level>DEBUG</level>
