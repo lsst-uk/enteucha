@@ -64,17 +64,32 @@ implements CQZone
     public static class ZoneSet
     implements CQZone.ZoneSet
         {
+        /**
+         * The number of zones.
+         * 
         private int count = 0 ;
+         */
+
+        /**
+         * The zone height.
+         * 
+         */
         private double height ;
 
+        /**
+         * The {@link IndexingShape} for this {@link CQZone.ZoneSet}.
+         * 
+         */
+        private IndexingShape indexing = IndexingShape.SEPARATE ;
+        
         public void init()
             {
             }
 
-        public ZoneSet(int count)
+        public ZoneSet(final IndexingShape indexing, double count)
             {
-            log.debug("CQZoneSetImpl() [{}]", count);
-            this.height = 180.0 / (double) count ;
+            this.indexing = indexing ;
+            this.height = 180.0 / count ;
             }
         
         @Override
@@ -136,6 +151,7 @@ implements CQZone
                 }
             else {
                 final CQZoneImpl temp = new CQZoneImpl(
+                    this.indexing,
                     ident
                     ) ;
                 zones.add(temp);
@@ -176,7 +192,7 @@ implements CQZone
         @Override
         public void insert(final Position position)
             {
-            log.trace("insert() [{}][{}][{}]", count++, position.ra(), position.dec());
+            log.trace("insert() [{}][{}]", position.ra(), position.dec());
             final CQZone zone = select(
                     (int) Math.floor((position.dec() + 90) / this.height)
                     );
@@ -185,7 +201,7 @@ implements CQZone
                 position
                 );
             total++;
-            log.trace("Added [{}][{}]", zone.total(), total);
+            log.trace("Added [{}][{}]", zone.total(), total());
             }
 
         public long total()
@@ -207,10 +223,7 @@ implements CQZone
             builder.append(this.getClass().getSimpleName());
             builder.append("] ");
             builder.append("Total rows [");
-            builder.append(this.total);
-            builder.append("] ");
-            builder.append("Zone count [");
-            builder.append(this.count);
+            builder.append(String.format("%,d", this.total()));
             builder.append("] ");
             builder.append("Zone height [");
             builder.append(this.height);
@@ -222,9 +235,9 @@ implements CQZone
             long mintotal = this.total ;
             for (CQZone zone : zones)
                 {
-                builder.append("Zone [");
-                builder.append(zone.config());
-                builder.append("] ");
+                //builder.append("Zone [");
+                //builder.append(zone.config());
+                //builder.append("] ");
                 
                 subcount++;
                 subtotal += zone.total();
@@ -237,6 +250,9 @@ implements CQZone
                     mintotal = zone.total();
                     }
                 }
+            builder.append("Zone count [");
+            builder.append(subcount);
+            builder.append("] ");
             builder.append("Avg zone size [");
             builder.append((subtotal/subcount));
             builder.append("] ");
@@ -255,8 +271,9 @@ implements CQZone
      * Protected constructor.
      * 
      */
-    protected CQZoneImpl(int ident)
+    protected CQZoneImpl(final IndexingShape indexing , int ident)
         {
+        this.indexing = indexing;
         this.ident = ident;
         }
 
@@ -433,10 +450,10 @@ implements CQZone
         };
 
     /**
-     * The {@link IndexingShape} for this {@link Matcher}.
+     * The {@link IndexingShape} for this {@link CQZone}.
      * 
      */
-    private IndexingShape indexing = IndexingShape.SEPARATE ;
+    private IndexingShape indexing ;
     
     /**
      * Our collection of {@link Position}s, indexed on {@link PositionImpl.POS_RA} and {@link PositionImpl.POS_DEC}. 
@@ -537,11 +554,10 @@ implements CQZone
         builder.append("] ");
         builder.append("Indexing [");
         builder.append(this.indexing.name());
-        builder.append("] ");
-        builder.append("Total rows [");
-        builder.append(this.total());
         builder.append("]");
-        
+        builder.append("Total rows [");
+        builder.append(String.format("%,d", this.total()));
+        builder.append("]");
         return builder.toString();
         }
     }

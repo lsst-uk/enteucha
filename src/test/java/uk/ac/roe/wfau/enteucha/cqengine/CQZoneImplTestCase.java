@@ -21,7 +21,7 @@ package uk.ac.roe.wfau.enteucha.cqengine;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
 import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
-import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
+import uk.ac.roe.wfau.enteucha.cqengine.CQZoneImpl.IndexingShape;
 
 /**
  * 
@@ -40,12 +40,23 @@ extends AbstractTestCase
         super();
         }
 
-    int zonecount = 1000;
+    /**
+     * The {@link IndexingShape} for this {@link TestCase}.
+     * 
+     */
+    private IndexingShape indexing ;
+
+    /**
+     * The zone count for this {@link TestCase}.
+     * 
+     */
+    private double zonecount;
     
     @Override
     public Matcher matcher()
         {
         return new CQZoneImpl.ZoneSet(
+            this.indexing,
             this.zonecount
             );
         }
@@ -56,14 +67,11 @@ extends AbstractTestCase
      */
     public void testFind004()
         {
-        this.zonecount  = 1000;
-        find004();
-        
-        this.zonecount  = 10000;
-        find004();
-
-        this.zonecount  = 100000;
-        find004();
+        for (int power = 2 ; power <= 6 ; power++ )
+            {
+            this.zonecount = Math.pow(10.0, power);
+            find004();
+            }
         }
     }
     

@@ -567,7 +567,7 @@ public class HsqlMatcherImpl implements Matcher
         builder.append(this.indexing.name());
         builder.append("] ");
         builder.append("Total rows [");
-        builder.append(this.total);
+        builder.append(String.format("%,d", this.total()));
         builder.append("] ");
         builder.append("URL [");
         builder.append(this.url());
