@@ -88,7 +88,8 @@ extends TestCase
         {
         log.debug("---- ---- ---- ----");
         log.debug("Starting crossmatch");
-        long start = System.currentTimeMillis();
+        long millistart = System.currentTimeMillis();
+        long nanostart = System.nanoTime();
         Iterable<Position> matches = matcher.matches(
             target,
             radius
@@ -99,13 +100,16 @@ extends TestCase
             log.info("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
-        long end = System.currentTimeMillis();
-        long diff = end - start ;
+        long milliend = System.currentTimeMillis();
+        long nanoend = System.nanoTime();
+        long millidiff = milliend - millistart ;
+        long nanodiff = nanoend - nanostart ;
         log.debug("---- ---- ---- ----");
         log.debug("Finished crossmatch");
-        log.debug("Found [{}] in [{}ms]", count, diff);
+        log.debug("Found [{}] in [{}ms]", count, millidiff);
+        log.debug("Found [{}] in [{}ns]", count, nanodiff);
         log.debug("---- ---- ---- ----");
-        return diff ;
+        return millidiff ;
         }
 
     /**
@@ -207,7 +211,7 @@ extends TestCase
                 0.0025
                 );
             }
-        log.debug("[{}] matches in [{}], avg [{}]", count, time, (time/count));
+        log.debug("[{}] matches from [{}] in [{}] (avg [{}])", count, matcher.total(), time, (time/count));
         }
     }
 

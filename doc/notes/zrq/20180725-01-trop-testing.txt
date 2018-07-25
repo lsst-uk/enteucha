@@ -156,7 +156,7 @@ EOF
 
     source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
-        mvn clean install
+        mvn clean test
     popd
 
         #
@@ -180,6 +180,26 @@ EOF
         # https://stackoverflow.com/questions/46346241/how-to-troubleshut-surefire-vm-crash-without-meaningful-dump
         # https://stackoverflow.com/questions/27994636/maven-surefire-test-failed-after-upgrade-to-jdk-8
         # https://stackoverflow.com/questions/42298883/maven-build-failure-when-running-tests-due-to-jvm-crash
+
+        #
+        # Updating dependencies and plugins solved the problem.
+
+        # Display Dependency Updates
+        mvn versions:display-dependency-updates
+
+        # Display Plugin Updates
+        mvn versions:display-plugin-updates
+
+# -----------------------------------------------------
+# Build our code and run our tests.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+        mvn clean test
+    popd
+
+
 
 
 
