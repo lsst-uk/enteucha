@@ -20,10 +20,7 @@ package uk.ac.roe.wfau.enteucha.api;
 
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.Position;
 import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
-import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl;
-import uk.ac.roe.wfau.enteucha.api.PositionImpl;
 
 /**
  * 
@@ -77,11 +74,13 @@ extends TestCase
         
         log.debug("---- ---- ---- ----");
         log.debug("Finished data insert");
-        log.debug(
-            "Inserted [{}] in [{}µs][{}ns], average [{}µs][{}ns]",
+        log.info(
+            "Inserted [{}] in [{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
             String.format("%,d", count),
+            (nanodiff/1000000),
             (nanodiff/1000),
             nanodiff,
+            (nanodiff/(count * 1000000)),
             (nanodiff/(count * 1000)),
             (nanodiff/count)
             );
@@ -105,7 +104,7 @@ extends TestCase
         int count = 0 ;
         for (Position match : matches)
             {
-            log.info("Found [{}][{}]", match.ra(), match.dec());
+            log.debug("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
         long nanoend = System.nanoTime();
@@ -216,13 +215,15 @@ extends TestCase
                 0.0025
                 );
             }
-        log.debug(
-            "[{}] matches from [{}] in [{}] loops, total [{}µs][{}ns], average [{}µs][{}ns]",
+        log.info(
+            "Searched [{}] in [{}] loops, total [{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
             loop, 
             String.format("%,d", matcher.total()),
             loop,
+            (nanosec/1000000),
             (nanosec/1000),
             nanosec,
+            (nanosec/(loop * 1000000)),
             (nanosec/(loop * 1000)),
             (nanosec/loop)
             );
