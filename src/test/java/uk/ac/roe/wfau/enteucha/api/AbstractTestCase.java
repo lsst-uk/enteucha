@@ -117,78 +117,13 @@ extends TestCase
         return nanodiff ;
         }
 
-    /**
-     * Test finding things.
-     * 
-     */
-    public void find001()
-        {
-        log.debug("Setting up test");
-        final Matcher matcher = this.init(
-            this.matcher(),
-           -2.0,
-            2.0,
-            0.25
-            );
-        log.debug("Running crossmatch");
-        this.match(
-            matcher,
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.25
-            );
-        }
+    
+    //double spacing = 0.0025;  
+    //double radius  = 0.0025;  
 
-    /**
-     * Test finding things.
-     * 
-     */
-    public void find002()
-        {
-        log.debug("Setting up test");
-        final Matcher matcher = this.init(
-            this.matcher(),
-           -2.0,
-            2.0,
-            0.125
-            );
-        log.debug("Running crossmatch");
-        this.match(
-            matcher,
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.125
-            );
-        }
-
-    /**
-     * Test finding things.
-     * 
-     */
-    public void find003()
-        {
-        log.debug("Setting up test");
-        final Matcher matcher = this.init(
-            this.matcher(),
-           -2.0,
-            2.0,
-            0.025
-            );
-        log.debug("Running crossmatch");
-        this.match(
-            matcher,
-            new PositionImpl(
-                1.20,
-                1.20
-                ),
-            0.025
-            );
-        }
-
+    double spacing = 0.025;  
+    double radius  = 0.025;  
+    
     /**
      * Test finding things.
      * 
@@ -200,7 +135,7 @@ extends TestCase
             this.matcher(),
            -2.0,
             2.0,
-            0.0025
+            spacing
             );
         long nanosec = 0 ;
         long loop;
@@ -213,7 +148,7 @@ extends TestCase
                     1.20,
                     1.20
                     ),
-                0.0025
+                radius
                 );
             }
         log.info(

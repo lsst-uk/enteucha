@@ -61,6 +61,20 @@
     </appender>
 
     <!--+
+        | Trace logging sent to log file.
+        +-->
+    <appender name="trace-log" class="ch.qos.logback.core.FileAppender">
+        <file>target/enteucha-trace.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>TRACE</level>
+        </filter>
+        <encoder>
+            <pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--+
         | Everything sent to all the loggers.
         +-->
     <root level="ALL">
@@ -73,7 +87,7 @@
 	    | Enteucha logging.
 	    +-->
 	<logger name="uk.ac.roe.wfau.enteucha">
-		<level value="DEBUG"/>
+		<level value="TRACE"/>
 	</logger>
 
 	<!--+

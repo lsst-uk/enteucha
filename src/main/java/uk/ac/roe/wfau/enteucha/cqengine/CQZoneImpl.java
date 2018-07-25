@@ -61,15 +61,9 @@ implements CQZone
      * 
      */
     @Slf4j
-    public static class ZoneSet
+    public static class ZoneSetImpl
     implements CQZone.ZoneSet
         {
-        /**
-         * The number of zones.
-         * 
-        private int count = 0 ;
-         */
-
         /**
          * The zone height.
          * 
@@ -86,7 +80,7 @@ implements CQZone
             {
             }
 
-        public ZoneSet(final IndexingShape indexing, double count)
+        public ZoneSetImpl(final IndexingShape indexing, double count)
             {
             this.indexing = indexing ;
             this.height = 180.0 / count ;
@@ -98,12 +92,12 @@ implements CQZone
             log.debug("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
             log.debug("height [{}]",  this.height);
-            log.debug("dec [{}][{}]", target.dec(), (target.dec() + 90), ((target.dec() + 90) - radius));
-            log.debug("min [{}][{}]", ((target.dec() + 90) - radius), (((target.dec() + 90) - radius) / this.height));
-            log.debug("max [{}][{}]", ((target.dec() + 90) + radius), (((target.dec() + 90) + radius) / this.height));
 
             final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
             final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
+
+            log.debug("min [{}]", min);
+            log.debug("max [{}]", max);
 
             return new GenericIterable<CQZone, CQZoneImpl>(
                 between(
@@ -119,7 +113,7 @@ implements CQZone
          */
         protected ResultSet<CQZoneImpl> between(final Integer min, final Integer max)
             {
-            log.trace("between() [{}][{}]", min, max);
+            log.debug("between() [{}][{}]", min, max);
             return zones.retrieve(
                 QueryFactory.between(
                     CQZoneImpl.ZONE_ID,
@@ -150,13 +144,13 @@ implements CQZone
                 return iter.next();
                 }
             else {
-                final CQZoneImpl temp = new CQZoneImpl(
+                final CQZoneImpl created = new CQZoneImpl(
                     this.indexing,
                     ident
                     ) ;
-                zones.add(temp);
-                log.trace("New zone [{}][{}]", temp.ident(), zones.size());
-                return temp ;
+                zones.add(created);
+                log.trace("New zone [{}][{}]", created.ident(), zones.size());
+                return created ;
                 }
             }
 
@@ -200,7 +194,7 @@ implements CQZone
             zone.insert(
                 position
                 );
-            total++;
+            this.total++;
             log.trace("Added [{}][{}]", zone.total(), total());
             }
 
@@ -253,6 +247,9 @@ implements CQZone
             builder.append("Zone count [");
             builder.append(subcount);
             builder.append("] ");
+            builder.append("Zone total [");
+            builder.append(subtotal);
+            builder.append("] ");
             builder.append("Avg zone size [");
             builder.append((subtotal/subcount));
             builder.append("] ");
@@ -275,6 +272,7 @@ implements CQZone
         {
         this.indexing = indexing;
         this.ident = ident;
+        this.init();
         }
 
     private int ident;
@@ -385,8 +383,8 @@ implements CQZone
         double mindec = (target.dec() - radius) ; 
         double maxdec = (target.dec() + radius) ; 
 
-        log.debug("min max ra  [{}][{}]", minra,  maxra) ;
-        log.debug("min max dec [{}][{}]", mindec, maxdec);
+        log.debug("min/max ra  [{}][{}]", minra,  maxra) ;
+        log.debug("min/max dec [{}][{}]", mindec, maxdec);
 /*
  *
         return positions.retrieve(
@@ -460,6 +458,9 @@ implements CQZone
      * 
      */
     private final IndexedCollection<PositionImpl> positions = new ConcurrentIndexedCollection<PositionImpl>();
+
+        
+    public void init()
         {
         switch(this.indexing)
             {
@@ -496,10 +497,6 @@ implements CQZone
         return positions.size();
         }
 
-    public void init()
-        {
-        }
-    
     /**
      * CQEngine {@link Attribute} for a zone identifier.
      * 

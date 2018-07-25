@@ -55,7 +55,7 @@ extends AbstractTestCase
     @Override
     public Matcher matcher()
         {
-        return new CQZoneImpl.ZoneSet(
+        return new CQZoneImpl.ZoneSetImpl(
             this.indexing,
             this.zonecount
             );
@@ -70,7 +70,7 @@ extends AbstractTestCase
         for (IndexingShape indexing : IndexingShape.values())
             {
             this.indexing = indexing;
-            for (int power = 2 ; power <= 6 ; power++ )
+            for (int power = 1 ; power <= 3 ; power++ )
                 {
                 this.zonecount = Math.pow(10.0, power);
                 find004();
