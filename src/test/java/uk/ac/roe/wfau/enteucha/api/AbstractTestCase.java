@@ -58,7 +58,7 @@ extends TestCase
         log.debug("---- ---- ---- ----");
         log.debug("Starting data insert");
         int count = 0 ;
-        long start = System.currentTimeMillis();
+        long nanostart = System.nanoTime();
         for (double i = min ; i < max ; i += step)
             {
             for (double j = min ; j < max ; j += step)
@@ -72,10 +72,18 @@ extends TestCase
                 count++;
                 }
             }
-        long end = System.currentTimeMillis();
+        long nanoend  = System.nanoTime();
+        long nanodiff = nanoend - nanostart;
+        
         log.debug("---- ---- ---- ----");
         log.debug("Finished data insert");
-        log.debug("Inserted [{}] in [{}ms], average [{}]", count, (end - start), ((end - start)/count));
+        log.debug(
+            "Inserted [{}] in [{}ns] (average [{}µs][{}ns])",
+            String.format("|%,d|", count),
+            nanodiff,
+            (nanodiff/(count * 1000)),
+            (nanodiff/count)
+            );
         log.debug("---- ---- ---- ----");
         return matcher;
         }
@@ -88,7 +96,6 @@ extends TestCase
         {
         log.debug("---- ---- ---- ----");
         log.debug("Starting crossmatch");
-        long millistart = System.currentTimeMillis();
         long nanostart = System.nanoTime();
         Iterable<Position> matches = matcher.matches(
             target,
@@ -100,16 +107,13 @@ extends TestCase
             log.info("Found [{}][{}]", match.ra(), match.dec());
             count++;
             }
-        long milliend = System.currentTimeMillis();
         long nanoend = System.nanoTime();
-        long millidiff = milliend - millistart ;
         long nanodiff = nanoend - nanostart ;
         log.debug("---- ---- ---- ----");
         log.debug("Finished crossmatch");
-        log.debug("Found [{}] in [{}ms]", count, millidiff);
         log.debug("Found [{}] in [{}ns]", count, nanodiff);
         log.debug("---- ---- ---- ----");
-        return millidiff ;
+        return nanodiff ;
         }
 
     /**
@@ -197,12 +201,12 @@ extends TestCase
             2.0,
             0.0025
             );
-        long time = 0 ;
-        long count;
-        for(count = 0 ; count < 4 ; count++)
+        long nanosec = 0 ;
+        long loop;
+        for(loop = 0 ; loop < 4 ; loop++)
             {
             log.debug("Running crossmatch");
-            time += this.match(
+            nanosec += this.match(
                 matcher,
                 new PositionImpl(
                     1.20,
@@ -211,7 +215,14 @@ extends TestCase
                 0.0025
                 );
             }
-        log.debug("[{}] matches from [{}] in [{}] (avg [{}])", count, matcher.total(), time, (time/count));
+        log.debug(
+            "[{}] matches from [{}] in [{}ns] (average [{}µs][{}ns])",
+            loop, 
+            String.format("|%,d|", matcher.total()),
+            nanosec,
+            (nanosec/(loop * 1000)),
+            (nanosec/loop)
+            );
         }
     }
 
