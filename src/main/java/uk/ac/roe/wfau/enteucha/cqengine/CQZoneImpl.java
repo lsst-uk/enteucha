@@ -27,6 +27,7 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.Index;
+import com.googlecode.cqengine.index.compound.CompoundIndex;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import com.googlecode.cqengine.query.QueryFactory;
@@ -36,6 +37,8 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.Position;
 import uk.ac.roe.wfau.enteucha.api.PositionImpl;
+import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
+import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
 import uk.ac.roe.wfau.enteucha.util.GenericIterable;
 
 /**
@@ -201,17 +204,17 @@ implements CQZone
             {
             final StringBuilder builder = new StringBuilder(); 
             builder.append("Class [");
-            builder.append(this.getClass().getName());
-            builder.append("]");
+            builder.append(this.getClass().getSimpleName());
+            builder.append("] ");
             builder.append("Total rows [");
             builder.append(this.total);
-            builder.append("]");
+            builder.append("] ");
             builder.append("Zone count [");
             builder.append(this.count);
-            builder.append("]");
+            builder.append("] ");
             builder.append("Zone height [");
             builder.append(this.height);
-            builder.append("]");
+            builder.append("] ");
 
             long subcount = 0 ;
             long subtotal = 0 ;
@@ -221,7 +224,7 @@ implements CQZone
                 {
                 builder.append("Zone [");
                 builder.append(zone.config());
-                builder.append("]");
+                builder.append("] ");
                 
                 subcount++;
                 subtotal += zone.total();
@@ -236,10 +239,10 @@ implements CQZone
                 }
             builder.append("Avg zone size [");
             builder.append((subtotal/subcount));
-            builder.append("]");
+            builder.append("] ");
             builder.append("Max zone size [");
             builder.append((maxtotal));
-            builder.append("]");
+            builder.append("] ");
             builder.append("Min zone size [");
             builder.append((maxtotal));
             builder.append("]");
@@ -420,30 +423,54 @@ implements CQZone
         }
 
     /**
+     * Indexing shape.
+     * 
+     */
+    public enum IndexingShape
+        {
+        SEPARATE(),
+        COMBINED();
+        };
+
+    /**
+     * The {@link IndexingShape} for this {@link Matcher}.
+     * 
+     */
+    private IndexingShape indexing = IndexingShape.SEPARATE ;
+    
+    /**
      * Our collection of {@link Position}s, indexed on {@link PositionImpl.POS_RA} and {@link PositionImpl.POS_DEC}. 
      * 
      */
     private final IndexedCollection<PositionImpl> positions = new ConcurrentIndexedCollection<PositionImpl>();
         {
-/*
-        positions.addIndex(
-            CompoundIndex.onAttributes(
-                CQZoneImpl.POS_RA,
-                CQZoneImpl.POS_DEC
-                )
-            );
- */
-
-        positions.addIndex(
-            NavigableIndex.onAttribute(
-                CQZoneImpl.POS_RA
-                )
-            );
-        positions.addIndex(
-            NavigableIndex.onAttribute(
-                CQZoneImpl.POS_DEC
-                )
-            );
+        switch(this.indexing)
+            {
+            case SEPARATE:
+                positions.addIndex(
+                    NavigableIndex.onAttribute(
+                        CQZoneImpl.POS_RA
+                        )
+                    );
+                positions.addIndex(
+                    NavigableIndex.onAttribute(
+                        CQZoneImpl.POS_DEC
+                        )
+                    );
+                break ;
+            case COMBINED:
+                positions.addIndex(
+                    CompoundIndex.onAttributes(
+                        CQZoneImpl.POS_RA,
+                        CQZoneImpl.POS_DEC
+                        )
+                    );
+                break ;
+            default:
+                throw new IllegalArgumentException(
+                    "Unknown indexing shape [{" + this.indexing.name() + "}]"
+                    ); 
+            }
         }
 
     @Override
@@ -506,21 +533,13 @@ implements CQZone
         {
         final StringBuilder builder = new StringBuilder(); 
         builder.append("Class [");
-        builder.append(this.getClass().getName());
-        builder.append("]");
+        builder.append(this.getClass().getSimpleName());
+        builder.append("] ");
+        builder.append("Indexing [");
+        builder.append(this.indexing.name());
+        builder.append("] ");
         builder.append("Total rows [");
         builder.append(this.total());
-        builder.append("]");
-
-        builder.append("Indexes [");
-        for (Index<PositionImpl> index : positions.getIndexes())
-            {
-            builder.append("[");
-            builder.append(
-                index.toString()
-                );
-            builder.append("]");
-            }
         builder.append("]");
         
         return builder.toString();

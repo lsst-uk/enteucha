@@ -561,16 +561,16 @@ public class HsqlMatcherImpl implements Matcher
         {
         final StringBuilder builder = new StringBuilder(); 
         builder.append("Class [");
-        builder.append(this.getClass().getName());
-        builder.append("]");
-        builder.append("DataSource [");
-        builder.append(this.source.toString());
-        builder.append("]");
+        builder.append(this.getClass().getSimpleName());
+        builder.append("] ");
         builder.append("Indexing [");
         builder.append(this.indexing.name());
-        builder.append("]");
+        builder.append("] ");
         builder.append("Total rows [");
         builder.append(this.total);
+        builder.append("] ");
+        builder.append("URL [");
+        builder.append(this.url());
         builder.append("]");
         return builder.toString();
         }

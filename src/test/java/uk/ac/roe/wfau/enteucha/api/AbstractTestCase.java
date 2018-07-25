@@ -54,7 +54,7 @@ extends TestCase
         matcher.init();
         log.debug("---- ---- ---- ----");
         log.debug("Starting data insert");
-        int count = 0 ;
+        long count = 0 ;
         long nanostart = System.nanoTime();
         for (double i = min ; i < max ; i += step)
             {
@@ -75,11 +75,12 @@ extends TestCase
         log.debug("---- ---- ---- ----");
         log.debug("Finished data insert");
         log.info(
-            "Inserted [{}] in [{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
+            "Inserted [{}] in [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
             String.format("%,d", count),
+            (nanodiff/1000000000),
             (nanodiff/1000000),
             (nanodiff/1000),
-            nanodiff,
+            (nanodiff),
             (nanodiff/(count * 1000000)),
             (nanodiff/(count * 1000)),
             (nanodiff/count)
@@ -216,19 +217,19 @@ extends TestCase
                 );
             }
         log.info(
-            "Searched [{}] in [{}] loops, total [{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
-            loop, 
+            "Searched [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
             String.format("%,d", matcher.total()),
             loop,
+            (nanosec/1000000000),
             (nanosec/1000000),
             (nanosec/1000),
-            nanosec,
+            (nanosec),
             (nanosec/(loop * 1000000)),
             (nanosec/(loop * 1000)),
             (nanosec/loop)
             );
         log.info(
-            "Matcher config [{}]",
+            "Matcher [{}]",
             matcher.config()
             );
         }
