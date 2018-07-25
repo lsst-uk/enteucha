@@ -227,6 +227,10 @@ extends TestCase
             (nanosec/(loop * 1000)),
             (nanosec/loop)
             );
+        log.info(
+            "Matcher config [{}]",
+            matcher.config()
+            );
         }
     }
 

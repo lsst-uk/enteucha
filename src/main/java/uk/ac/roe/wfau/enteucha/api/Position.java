@@ -71,6 +71,12 @@ public interface Position
          */
         public long total();
 
+        /**
+         * Describe the {@link Matcher} configuration.
+         * 
+         */
+        public String config();
+        
         }
 
     

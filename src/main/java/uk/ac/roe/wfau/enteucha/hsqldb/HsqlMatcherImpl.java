@@ -20,11 +20,9 @@ package uk.ac.roe.wfau.enteucha.hsqldb;
 
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -556,5 +554,24 @@ public class HsqlMatcherImpl implements Matcher
     public long total()
         {
         return total;
+        }
+
+    @Override
+    public String config()
+        {
+        final StringBuilder builder = new StringBuilder(); 
+        builder.append("Class [");
+        builder.append(this.getClass().getName());
+        builder.append("]");
+        builder.append("DataSource [");
+        builder.append(this.source.toString());
+        builder.append("]");
+        builder.append("Indexing [");
+        builder.append(this.indexing.name());
+        builder.append("]");
+        builder.append("Total rows [");
+        builder.append(this.total);
+        builder.append("]");
+        return builder.toString();
         }
     }

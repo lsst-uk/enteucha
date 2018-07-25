@@ -57,10 +57,4 @@ extends Matcher
      */
     public int ident();
 
-    /**
-     * Get the count of {@link Position}s in this {@link CQZone}.
-     * 
-     */
-    public int count();
-
     }

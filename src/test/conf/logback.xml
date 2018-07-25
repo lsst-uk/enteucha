@@ -19,24 +19,41 @@
     |
     +-->
 <configuration>
-	<!--+
-	    | Default console appender (e.g. tomcat/logs/catalina.out).
-	    | http://logback.qos.ch/manual/configuration.html
-	    | http://logback.qos.ch/manual/appenders.html
-	    | http://logback.qos.ch/manual/layouts.html
-	    +-->
-        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-            <file>logs/enteucha-debug.log</file>
-            <append>true</append>
-            <encoder>
-                <pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern>
-            </encoder>
-        </appender>
 
-        <root level="DEBUG">
-           <appender-ref ref="FILE" />
-        </root>
-	
+    <!--+
+        | Live test logging to stdout.
+        +-->
+    <appender name="test-log" class="ch.qos.logback.core.ConsoleAppende">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--+
+        | Debug logging sent to log file.
+        +-->
+    <appender name="debug-log" class="ch.qos.logback.core.FileAppender">
+        <file>enteucha-debug.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--+
+        | Everything sent to all the loggers.
+        +-->
+    <root level="ALL">
+        <appender-ref ref="test-log" />
+        <appender-ref ref="debug-log" />
+    </root>
+
 	<!--+
 	    | Enteucha logging.
 	    +-->

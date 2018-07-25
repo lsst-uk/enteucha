@@ -26,6 +26,7 @@ import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
+import com.googlecode.cqengine.index.Index;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import com.googlecode.cqengine.query.QueryFactory;
@@ -157,7 +158,7 @@ implements CQZone
             final List<Position> list = new ArrayList<Position>(100);  
             for (CQZone zone : contains(target, radius))
                 {
-                log.trace("Checking zone [{}][{}]", zone.ident(), zone.count());
+                log.trace("Checking zone [{}][{}]", zone.ident(), zone.total());
                 for (Position match : zone.matches(target, radius))
                     {
                     log.trace("Found match [{}][{}]", match.ra(), match.dec());
@@ -181,7 +182,7 @@ implements CQZone
                 position
                 );
             total++;
-            log.trace("Added [{}][{}]", zone.count(), total);
+            log.trace("Added [{}][{}]", zone.total(), total);
             }
 
         public long total()
@@ -193,6 +194,57 @@ implements CQZone
         public Iterable<Position> verify()
             {
             return null;
+            }
+
+        @Override
+        public String config()
+            {
+            final StringBuilder builder = new StringBuilder(); 
+            builder.append("Class [");
+            builder.append(this.getClass().getName());
+            builder.append("]");
+            builder.append("Total rows [");
+            builder.append(this.total);
+            builder.append("]");
+            builder.append("Zone count [");
+            builder.append(this.count);
+            builder.append("]");
+            builder.append("Zone height [");
+            builder.append(this.height);
+            builder.append("]");
+
+            long subcount = 0 ;
+            long subtotal = 0 ;
+            long maxtotal = 0 ;
+            long mintotal = this.total ;
+            for (CQZone zone : zones)
+                {
+                builder.append("Zone [");
+                builder.append(zone.config());
+                builder.append("]");
+                
+                subcount++;
+                subtotal += zone.total();
+                if (zone.total() > maxtotal)
+                    {
+                    maxtotal = zone.total();
+                    }
+                if (zone.total() < mintotal)
+                    {
+                    mintotal = zone.total();
+                    }
+                }
+            builder.append("Avg zone size [");
+            builder.append((subtotal/subcount));
+            builder.append("]");
+            builder.append("Max zone size [");
+            builder.append((maxtotal));
+            builder.append("]");
+            builder.append("Min zone size [");
+            builder.append((maxtotal));
+            builder.append("]");
+            
+            return builder.toString();
             }
         }
     
@@ -395,7 +447,7 @@ implements CQZone
         }
 
     @Override
-    public int count()
+    public long total()
         {
         return positions.size();
         }
@@ -450,10 +502,28 @@ implements CQZone
         }
 
     @Override
-    public long total()
+    public String config()
         {
-        // TODO Auto-generated method stub
-        return 0;
+        final StringBuilder builder = new StringBuilder(); 
+        builder.append("Class [");
+        builder.append(this.getClass().getName());
+        builder.append("]");
+        builder.append("Total rows [");
+        builder.append(this.total());
+        builder.append("]");
+
+        builder.append("Indexes [");
+        for (Index<PositionImpl> index : positions.getIndexes())
+            {
+            builder.append("[");
+            builder.append(
+                index.toString()
+                );
+            builder.append("]");
+            }
+        builder.append("]");
+        
+        return builder.toString();
         }
     }
 
