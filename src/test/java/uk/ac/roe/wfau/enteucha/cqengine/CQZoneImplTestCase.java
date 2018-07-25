@@ -67,10 +67,14 @@ extends AbstractTestCase
      */
     public void testFind004()
         {
-        for (int power = 2 ; power <= 6 ; power++ )
+        for (IndexingShape indexing : IndexingShape.values())
             {
-            this.zonecount = Math.pow(10.0, power);
-            find004();
+            this.indexing = indexing;
+            for (int power = 2 ; power <= 6 ; power++ )
+                {
+                this.zonecount = Math.pow(10.0, power);
+                find004();
+                }
             }
         }
     }

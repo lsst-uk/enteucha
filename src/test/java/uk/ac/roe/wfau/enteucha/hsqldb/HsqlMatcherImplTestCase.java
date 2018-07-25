@@ -53,7 +53,6 @@ extends AbstractTestCase
             1000
             );
         }
-
     
     /**
      * Test finding things.
@@ -61,13 +60,10 @@ extends AbstractTestCase
      */
     public void testFind004()
         {
-        this.indexing = IndexingShape.SEPARATE;
-        find004();
-        
-        this.indexing = IndexingShape.COMBINED;
-        find004();
-
-        this.indexing = IndexingShape.COMPLEX;
-        find004();
+        for (IndexingShape indexing : IndexingShape.values())
+            {
+            this.indexing = indexing;
+            find004();
+            }
         }
     }

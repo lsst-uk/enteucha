@@ -217,6 +217,10 @@ extends TestCase
                 );
             }
         log.info(
+            "Matcher [{}]",
+            matcher.config()
+            );
+        log.info(
             "Searched [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
             String.format("%,d", matcher.total()),
             loop,
@@ -227,10 +231,6 @@ extends TestCase
             (nanosec/(loop * 1000000)),
             (nanosec/(loop * 1000)),
             (nanosec/loop)
-            );
-        log.info(
-            "Matcher [{}]",
-            matcher.config()
             );
         }
     }
