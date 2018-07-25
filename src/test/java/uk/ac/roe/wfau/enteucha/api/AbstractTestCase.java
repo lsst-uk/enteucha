@@ -78,8 +78,9 @@ extends TestCase
         log.debug("---- ---- ---- ----");
         log.debug("Finished data insert");
         log.debug(
-            "Inserted [{}] in [{}ns] (average [{}µs][{}ns])",
-            String.format("|%,d|", count),
+            "Inserted [{}] in [{}µs][{}ns], average [{}µs][{}ns]",
+            String.format("%,d", count),
+            (nanodiff/1000),
             nanodiff,
             (nanodiff/(count * 1000)),
             (nanodiff/count)
@@ -216,9 +217,11 @@ extends TestCase
                 );
             }
         log.debug(
-            "[{}] matches from [{}] in [{}ns] (average [{}µs][{}ns])",
+            "[{}] matches from [{}] in [{}] loops, total [{}µs][{}ns], average [{}µs][{}ns]",
             loop, 
-            String.format("|%,d|", matcher.total()),
+            String.format("%,d", matcher.total()),
+            loop,
+            (nanosec/1000),
             nanosec,
             (nanosec/(loop * 1000)),
             (nanosec/loop)
