@@ -21,16 +21,18 @@
 #
 
 
-    source "${HOME}/projects.settings"
-     
-cat > "${HOME}/enteucha.settings" << 'EOF'
-source "${HOME}/projects.settings"
-ENTEUCHA_BASE="${EDINBURGH_PROJECTS:?}/enteucha"
-ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
-#NTEUCHA_REPO='git@github.com:lsst-uk/enteucha.git'
-ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
-EOF
+# -----------------------------------------------------
+# Laptop settings.
+#[user@laptop]
 
+    source "${HOME}/projects.settings"
+    cat > "${HOME}/enteucha.settings" << 'EOF'
+    source "${HOME}/projects.settings"
+    ENTEUCHA_BASE="${EDINBURGH_PROJECTS:?}/enteucha"
+    ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
+    #NTEUCHA_REPO='git@github.com:lsst-uk/enteucha.git'
+    ENTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+    EOF
 
     source "${HOME:?}/enteucha.settings"
     if [ ! -e "${ENTEUCHA_CODE:?}" ]
@@ -49,7 +51,6 @@ EOF
             git pull
         popd
     fi
-
 
     source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
