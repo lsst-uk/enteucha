@@ -219,6 +219,9 @@ implements CQZone
             builder.append("Total rows [");
             builder.append(String.format("%,d", this.total()));
             builder.append("] ");
+            builder.append("Indexing [");
+            builder.append(this.indexing.name());
+            builder.append("] ");
             builder.append("Zone height [");
             builder.append(this.height);
             builder.append("] ");
@@ -257,7 +260,7 @@ implements CQZone
             builder.append((maxtotal));
             builder.append("] ");
             builder.append("Min zone size [");
-            builder.append((maxtotal));
+            builder.append((mintotal));
             builder.append("]");
             
             return builder.toString();

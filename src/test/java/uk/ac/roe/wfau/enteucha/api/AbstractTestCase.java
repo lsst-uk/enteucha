@@ -121,7 +121,7 @@ extends TestCase
     //double spacing = 0.0025;  
     //double radius  = 0.0025;  
 
-    double spacing = 0.025;  
+    double spacing = 0.0125;  
     double radius  = 0.025;  
     
     /**
@@ -130,6 +130,7 @@ extends TestCase
      */
     public void find004()
         {
+        log.info("---- ----");
         log.debug("Setting up test");
         final Matcher matcher = this.init(
             this.matcher(),
@@ -139,7 +140,7 @@ extends TestCase
             );
         long nanosec = 0 ;
         long loop;
-        for(loop = 0 ; loop < 4 ; loop++)
+        for(loop = 0 ; loop < 8 ; loop++)
             {
             log.debug("Running crossmatch");
             nanosec += this.match(
@@ -156,7 +157,7 @@ extends TestCase
             matcher.config()
             );
         log.info(
-            "Searched [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
+            "Searched [{}] rows, [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
             String.format("%,d", matcher.total()),
             loop,
             (nanosec/1000000000),
@@ -165,9 +166,11 @@ extends TestCase
             (nanosec),
             (nanosec/(loop * 1000000)),
             (nanosec/(loop * 1000)),
-            (nanosec/loop)
+            (nanosec/loop),
+            (((nanosec/loop) < 1000000) ? "PASS" : "FAIL")
             );
         }
     }
 
 
+    
