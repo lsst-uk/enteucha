@@ -233,11 +233,10 @@
 
     <build>
 
+        <!--+
+            | Build metadata and config.
+            +-->
         <resources>
-
-            <!--+
-                | Build metadata.
-                +-->
     		<resource>
     			<directory>${basedir}/src/main/meta</directory>
                 <filtering>true</filtering>
@@ -246,8 +245,28 @@
                     <include>*.xml</include>
                 </includes>
     		</resource>
-
+    		<resource>
+    			<directory>${basedir}/src/main/conf</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.properties</include>
+                    <include>*.xml</include>
+                </includes>
+    		</resource>
         </resources>
+
+        <!--+
+            | Test resources and config.
+            +-->
+        <testResources>
+    		<testResource>
+    			<directory>${basedir}/src/test/conf</directory>
+                <includes>
+                    <include>*.properties</include>
+                    <include>*.xml</include>
+                </includes>
+    		</testResource>
+        </testResources>
 
         <plugins>
 

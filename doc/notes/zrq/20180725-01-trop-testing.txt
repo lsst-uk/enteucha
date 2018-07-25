@@ -112,8 +112,11 @@
             bash 
 
 #
-# Ideally, yes, but in rality, not yet
+# Ideally, yes, but in reality, not yet
 # --user "$(id -u):$(id -g)" \
+# Create user builder, id 1001 inside the container.
+# Create home directory /home/builder
+
 
 # -----------------------------------------------------
 # Builder settings
