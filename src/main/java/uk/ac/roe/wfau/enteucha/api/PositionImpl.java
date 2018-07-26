@@ -18,13 +18,10 @@
 
 package uk.ac.roe.wfau.enteucha.api;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * A simple POJO implementation of {@link Position}.
  * 
  */
-@Slf4j
 public class PositionImpl implements Position
     {
 
