@@ -20,7 +20,8 @@ package uk.ac.roe.wfau.enteucha.api;
 
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
+import uk.ac.roe.wfau.enteucha.api.Position;
 
 /**
  * 
@@ -37,12 +38,6 @@ extends TestCase
     public AbstractTestCase()
         {
         }
-
-    /**
-     * Create our {@link Matcher}.
-     * 
-     */
-    public abstract Matcher matcher();
 
     /**
      * Initialise our {@link Matcher}.
@@ -128,12 +123,12 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void find004()
+    public void findtest(final Matcher.Factory factory)
         {
         log.info("---- ----");
         log.debug("Setting up test");
         final Matcher matcher = this.init(
-            this.matcher(),
+            factory.create(),
            -2.0,
             2.0,
             spacing

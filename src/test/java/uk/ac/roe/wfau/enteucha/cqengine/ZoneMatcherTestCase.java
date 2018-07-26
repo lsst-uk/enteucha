@@ -19,61 +19,56 @@
 package uk.ac.roe.wfau.enteucha.cqengine;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
+import uk.ac.roe.wfau.enteucha.api.Position;
 import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
-import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
-import uk.ac.roe.wfau.enteucha.cqengine.CQZoneImpl.IndexingShape;
+import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcher;
+import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcher.IndexingShape;
+import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcherImpl;
 
 /**
  * 
  * 
  */
 @Slf4j
-public class CQZoneImplTestCase
+public class ZoneMatcherTestCase
 extends AbstractTestCase
     {
 
     /**
+     * Public constructor.
      * 
      */
-    public CQZoneImplTestCase()
+    public ZoneMatcherTestCase()
         {
         super();
         }
 
-    /**
-     * The {@link IndexingShape} for this {@link TestCase}.
-     * 
-     */
-    private IndexingShape indexing ;
-
-    /**
-     * The zone count for this {@link TestCase}.
-     * 
-     */
-    private double zonecount;
-    
-    @Override
-    public Matcher matcher()
-        {
-        return new CQZoneImpl.ZoneSetImpl(
-            this.indexing,
-            this.zonecount
-            );
-        }
-    
     /**
      * Test finding things.
      * 
      */
     public void testFind004()
         {
-        for (IndexingShape indexing : IndexingShape.values())
+        for (IndexingShape indexshape : IndexingShape.values())
             {
-            this.indexing = indexing;
             for (int power = 1 ; power < 7 ; power++ )
                 {
-                this.zonecount = Math.pow(10.0, power);
-                find004();
+                final double zonecount = Math.pow(10.0, power);
+                final IndexingShape indexing = indexshape ;
+                findtest(
+                    new Matcher.Factory()
+                        {
+                        @Override
+                        public Matcher create()
+                            {
+                            return new ZoneMatcherImpl(
+                                indexing,
+                                zonecount
+                                );
+                            }
+                        }
+                    );
                 }
             }
         }

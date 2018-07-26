@@ -34,8 +34,8 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
 import uk.ac.roe.wfau.enteucha.api.Position;
-import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
 import uk.ac.roe.wfau.enteucha.api.PositionImpl;
 
 /**
@@ -61,10 +61,10 @@ public class HsqlMatcherImpl implements Matcher
      * Public constructor.
      * 
      */
-    public HsqlMatcherImpl(final IndexingShape indexing, int count)
+    public HsqlMatcherImpl(final IndexingShape indexing, double count)
         {
         this.indexing = indexing;
-        this.height = 180.0 / (double) count ;
+        this.height = 180.0 / count ;
         }
 
     /**

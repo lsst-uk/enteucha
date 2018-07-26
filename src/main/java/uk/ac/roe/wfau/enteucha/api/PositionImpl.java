@@ -21,12 +21,26 @@ package uk.ac.roe.wfau.enteucha.api;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * A CQEngine based implementation of {@link Position}
+ * A simple POJO implementation of {@link Position}.
  * 
  */
 @Slf4j
 public class PositionImpl implements Position
     {
+
+    /**
+     * A simple implementation of {@link Position.Factory}.
+     *  
+     */
+    public static class Factory
+    implements Position.Factory
+        {
+        @Override
+        public Position create(final Double ra, final Double dec)
+            {
+            return new PositionImpl(ra, dec);
+            }
+        }
 
     /**
      * Protected constructor.

@@ -19,50 +19,54 @@
 package uk.ac.roe.wfau.enteucha.api;
 
 /**
- * Public interface for a {@link Position} in the sky. 
+ * Public interface for a {@link Position} matcher. 
  * 
  */
-public interface Position
+public interface Matcher
     {
 
     /**
-     * Public interface for a {@link Position} factory.
+     * Public interface for a {@link Matcher} factory. 
      * 
      */
-    public static interface Factory
+    public interface Factory
         {
         /**
-         * Create a new {@link Position}.
-         * 
+         * Create a new {@link Matcher}.
+         *
          */
-        public Position create(final Double ra, final Double dec) ;
+        public Matcher create();
+
         }
-    
-    /**
-     * The equatorial coordinate right ascension.
-     * 
-     */
-    public Double ra();
-    /**
-     * The equatorial coordinate declination.
-     * 
-     */
-    public Double dec();
 
     /**
-     * Cartesian coordinate.
+     * Initialise the {@link Matcher}.
      * 
      */
-    public Double cx();
+    public void init();
+        
     /**
-     * Cartesian coordinate.
+     * Match {@link Position}s within a radius around a target {@link Position}.
      * 
      */
-    public Double cy();
+    public Iterable<Position> matches(final Position target, final Double radius);
+        
     /**
-     * Cartesian coordinate.
+     * Insert a {@link Position} into the {@link Matcher}.
      * 
      */
-    public Double cz();
-    
+    public void insert(final Position position);
+
+    /**
+     * Get the total number of positions in this {@link Matcher}. 
+     * 
+     */
+    public long total();
+
+    /**
+     * Describe the {@link Matcher} configuration.
+     * 
+     */
+    public String config();
+
     }

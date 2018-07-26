@@ -19,9 +19,9 @@
 package uk.ac.roe.wfau.enteucha.hsqldb;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
 import uk.ac.roe.wfau.enteucha.api.PositionImpl;
-import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
+import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
 import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
 
 /**
@@ -29,41 +29,46 @@ import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
  * 
  */
 @Slf4j
-public class HsqlMatcherImplTestCase
+public class HsqlMatcherTestCase
 extends AbstractTestCase
     {
 
-    public HsqlMatcherImplTestCase()
+    /**
+     * Public constructor.
+     * 
+     */
+    public HsqlMatcherTestCase()
         {
         super();
         }
 
     /**
-     * The {@link IndexingShape} for this {@link TestCase}.
-     * 
-     */
-    private IndexingShape indexing ;
-    
-    
-    @Override
-    public Matcher matcher()
-        {
-        return new HsqlMatcherImpl(
-            indexing ,
-            1000
-            );
-        }
-    
-    /**
      * Test finding things.
      * 
+    @Test
      */
     public void testFind004()
         {
-        for (IndexingShape indexing : IndexingShape.values())
+        for (IndexingShape indexshape : IndexingShape.values())
             {
-            this.indexing = indexing;
-            find004();
+            for (int power = 1 ; power < 7 ; power++ )
+                {
+                final double zonecount = Math.pow(10.0, power);
+                final IndexingShape indexing = indexshape ;
+                findtest(
+                    new Matcher.Factory()
+                        {
+                        @Override
+                        public Matcher create()
+                            {
+                            return new HsqlMatcherImpl(
+                                indexing,
+                                zonecount
+                                );
+                            }
+                        }
+                    );
+                }
             }
         }
     }

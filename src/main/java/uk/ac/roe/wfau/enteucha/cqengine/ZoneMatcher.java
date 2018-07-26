@@ -18,14 +18,14 @@
 
 package uk.ac.roe.wfau.enteucha.cqengine;
 
+import uk.ac.roe.wfau.enteucha.api.Matcher;
 import uk.ac.roe.wfau.enteucha.api.Position;
-import uk.ac.roe.wfau.enteucha.api.Position.Matcher;
 
 /**
  * Public interface for a declination stripe.
  * 
  */
-public interface CQZone
+public interface ZoneMatcher
 extends Matcher
     {
 
@@ -34,27 +34,37 @@ extends Matcher
      * 
      *
      */
-    public static interface ZoneSet
+    public static interface Zone
     extends Matcher
         {
         /**
-         * Select a set of {@link CQZone}s that contain {@link Position}s within a radius around a target {@link Position}.
+         * The zone identifier.
          * 
          */
-        public Iterable<CQZone> contains(final Position target, final Double radius);
-
-        /**
-         * The total number of {@link Position}s in this {@link ZoneSet}
-         * .
-         */
-        public long total();
+        public int ident();
 
         }
-    
+
     /**
-     * The zone identifier.
+     * Select a set of {@link Zone}s that contain {@link Position}s within a radius around a target {@link Position}.
      * 
      */
-    public int ident();
+    public Iterable<Zone> contains(final Position target, final Double radius);
+
+    /**
+     * Enumeration of the available indexing schemes.
+     * 
+     */
+    public enum IndexingShape
+        {
+        SEPARATE(),
+        COMBINED();
+        };
+
+    /**
+     * The {@link IndexingShape} for this {@link ZoneMatcher}.
+     * 
+     */
+    public IndexingShape indexing();
 
     }
