@@ -445,6 +445,7 @@ Unsorted data
 
     vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
     int resolution = 11 ;
+    int resolution = 12 ;
 
     mvn clean test -D 'test=ZoneMatcherTestCase'
 

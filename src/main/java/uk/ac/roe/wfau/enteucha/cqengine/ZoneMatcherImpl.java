@@ -136,8 +136,9 @@ implements ZoneMatcher
      */
     protected ResultSet<ZoneImpl> between(final Integer min, final Integer max)
         {
-        //log.debug("between() [{}][{}]", min, max);
-        return zones.retrieve(
+        log.debug("between() [{}][{}]", min, max);
+        long a = System.nanoTime();
+        final ResultSet<ZoneImpl>  results = zones.retrieve(
             QueryFactory.between(
                 ZoneMatcherImpl.ZONE_ID,
                 min,
@@ -146,6 +147,10 @@ implements ZoneMatcher
                 true
                 )
             );
+
+        long b = System.nanoTime();
+        log.debug("Zone between took [{}µs][{}ns]", ((b -a)/1000), (b -a) );
+        return results ; 
         }
 
     /**
@@ -330,7 +335,8 @@ implements ZoneMatcher
          */
         protected boolean match(final Position target, final Double radius, final Position pos)
             {
-            //log.trace("match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
+            log.trace("Zone match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
+            long a = System.nanoTime();
             double squares =
                     Math.pow(
                         pos.cx() - target.cx(),
@@ -356,7 +362,8 @@ implements ZoneMatcher
                     );
 
             boolean result = (squaresin > squares) ;
-            //log.trace("compare [{}]>[{}]=[{}]", squaresin, squares, result);
+            long b = System.nanoTime();
+            log.debug("Zone cx/cy/zc compare [{}]>[{}]=[{}] took [{}µs][{}ns]", squaresin, squares, result, ((b -a)/1000), (b -a));
             return result;
             }
     
@@ -418,7 +425,7 @@ implements ZoneMatcher
          */
         protected ResultSet<PositionImpl> query(final Position target, final Double radius)
             {
-            //log.debug("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
+            log.debug("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
             double factor = radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon);
             double minra = target.ra() - factor;
@@ -427,8 +434,8 @@ implements ZoneMatcher
             double mindec = (target.dec() - radius) ; 
             double maxdec = (target.dec() + radius) ; 
 
-            //log.debug("min/max ra  [{}][{}]", minra,  maxra) ;
-            //log.debug("min/max dec [{}][{}]", mindec, maxdec);
+            log.debug("min/max ra  [{}][{}]", minra,  maxra) ;
+            log.debug("min/max dec [{}][{}]", mindec, maxdec);
 /*
  *
  * TODO Make this configurable.
@@ -443,7 +450,8 @@ implements ZoneMatcher
                 );
  *
  */        
-            return positions.retrieve(
+            long a = System.nanoTime();
+            final ResultSet<PositionImpl> results = positions.retrieve(
                 QueryFactory.and(
                     QueryFactory.between(
                         ZoneMatcherImpl.POS_DEC,
@@ -461,6 +469,9 @@ implements ZoneMatcher
                         )
                     )
                 );
+            long b = System.nanoTime();
+            log.debug("Zone ra/dec query took [{}µs][{}ns]", ((b -a)/1000), (b -a) );
+            return results ;
             }
 
         @Override
