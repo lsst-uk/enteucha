@@ -274,10 +274,10 @@ implements ZoneMatcher
         builder.append("] ");
         builder.append("Zone size [");
         builder.append((subtotal/subcount));
-        builder.append("] ");
+        builder.append("]");
         builder.append("[");
         builder.append((maxtotal));
-        builder.append("] ");
+        builder.append("]");
         builder.append("[");
         builder.append((mintotal));
         builder.append("]");
