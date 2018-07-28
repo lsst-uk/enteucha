@@ -341,7 +341,6 @@ Sorted data
 
 Unsorted data
 
-
       sed '
         s/.*TestCase] \[\([0-9.,]*\)]/\1/
         s/.*TestCase] \(----\)/\1/
