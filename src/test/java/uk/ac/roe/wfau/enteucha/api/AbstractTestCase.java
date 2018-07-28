@@ -38,7 +38,7 @@ extends TestCase
     public AbstractTestCase()
         {
         }
-    
+
     /**
      * Test finding things.
      * 
@@ -52,8 +52,10 @@ extends TestCase
                 120.0,
                 120.0
                 ),
-            0.01,
-            1.0
+            0.001, // search radius
+            1.0,   // insert radius
+            10,    // insert depth
+            10     // match repeat
             );
         try {
             log.info("---- find finalize ----");
@@ -76,16 +78,14 @@ extends TestCase
         log.info("---- find done ----");
         }
 
-    int resolution = 9 ;
-    
-    public void outer(final Matcher.Factory factory, final Position target, double searchradius, double insertradius)
+    public void outer(final Matcher.Factory factory, final Position target, double searchradius, double insertradius, int insertdepth, int matchrepeat)
         {
         final Matcher matcher = factory.create();
         matcher.insert(
             target
             );
         
-        for (double a = 0 ; a < resolution ; a++)
+        for (double a = 0 ; a < insertdepth ; a++)
             {
             double b = Math.pow(2.0, a);
             for (double c = -b ; c <= b ; c++)
@@ -110,38 +110,42 @@ extends TestCase
             inner(
                 matcher,
                 target,
-                searchradius
+                searchradius,
+                matchrepeat 
                 );
             }
         }
 
-    long repeat = 10 ;
-
-    public void inner(final Matcher matcher, final Position target, double radius)
+    public void inner(final Matcher matcher, final Position target, double radius, int matchrepeat)
         {
-        long count = 0 ;
-        long nanosec = 0 ;
-        for(long loop = 0 ; loop < repeat ; loop++)
+        long looptime  = 0 ;
+        long loopcount = 0 ;
+        for(long loop = 0 ; loop < matchrepeat ; loop++)
             {
+            long matchcount = 0 ;
             log.debug("---- ---- ---- ----");
             log.debug("Starting crossmatch");
-            long nanostart = System.nanoTime();
+            long innerstart = System.nanoTime();
             Iterable<Position> matches = matcher.matches(
                 target,
                 radius
                 );
+            long innermid = System.nanoTime();
             for (Position match : matches)
                 {
-                log.debug("Found [{}][{}]", match.ra(), match.dec());
-                count++;
+                //log.debug("Found [{}][{}]", match.ra(), match.dec());
+                loopcount++;
+                matchcount++;
                 }
-            long nanoend = System.nanoTime();
-            long nanodiff = nanoend - nanostart ;
+            long innerend = System.nanoTime();
+            long innerone = innermid - innerstart ;
+            long innertwo = innerend - innermid ;
+            long innertime = innerend - innerstart;
+            looptime += innertime ;
             log.debug("---- ---- ---- ----");
             log.debug("Finished crossmatch");
-            log.debug("Found [{}] in [{}ns]", count, nanodiff);
+            log.debug("Found [{}] in [{}µs {}ns][{}µs {}ns][{}µs {}ns]", matchcount, (innerone/1000), innerone, (innertwo/1000), innertwo, (innertime/1000), innertime);
             log.debug("---- ---- ---- ----");
-            nanosec += nanodiff;
             }
         log.info(
             "Matcher [{}]",
@@ -150,16 +154,16 @@ extends TestCase
         log.info(
             "Searched [{}] found [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
             String.format("%,d", matcher.total()),
-            (count/repeat),
-            repeat,
-            (nanosec/1000000000),
-            (nanosec/1000000),
-            (nanosec/1000),
-            (nanosec),
-            (nanosec/(repeat * 1000000)),
-            (nanosec/(repeat * 1000)),
-            (nanosec/repeat),
-            (((nanosec/repeat) < 1000000) ? "PASS" : "FAIL")
+            (loopcount/matchrepeat),
+            matchrepeat,
+            (looptime/1000000000),
+            (looptime/1000000),
+            (looptime/1000),
+            (looptime),
+            (looptime/(matchrepeat * 1000000)),
+            (looptime/(matchrepeat * 1000)),
+            (looptime/matchrepeat),
+            (((looptime/matchrepeat) < 1000000) ? "PASS" : "FAIL")
             );
         }
     }

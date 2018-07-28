@@ -93,20 +93,45 @@ implements ZoneMatcher
         this.height = 180.0 / count ;
         }
 
+    long zonetotal = 0 ;
+    long zonecount = 0 ;
+
+    long mathtotal = 0 ;
+    long mathcount = 0 ;
+
+    long radectotal = 0 ;
+    long radeccount = 0 ;
+    
     @Override
     public Iterable<Position> matches(final Position target, final Double radius)
         {
         //log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
+
+        this.zonetotal = 0 ;
+        this.zonecount = 0 ;
+
+        this.mathtotal = 0 ;
+        this.mathcount = 0 ;
+
+        this.radectotal = 0 ;
+        this.radeccount = 0 ;
+        
         final List<Position> list = new ArrayList<Position>(100);  
         for (Zone zone : contains(target, radius))
             {
             //log.trace("Checking zone [{}][{}]", zone.ident(), zone.total());
+            zonecount++;
             for (Position match : zone.matches(target, radius))
                 {
                 //log.trace("Found match [{}][{}]", match.ra(), match.dec());
                 list.add(match);
                 }
             }
+
+        log.debug("Math cx/cy/zc compare [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.mathcount),  (this.mathtotal/1000),  (this.mathtotal),  (this.mathtotal/(this.mathcount * 1000)),   (this.mathtotal/this.mathcount));
+        log.debug("Zone ra/dec/pos query [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.radeccount), (this.radectotal/1000), (this.radectotal), (this.radectotal/(this.radeccount * 1000)), (this.radectotal/this.radeccount));
+        log.debug("Zone between found [{}] from [{}] took [{}µs][{}ns]", (zonecount), zones.size(), ((zonetotal)/1000), (zonetotal) );
+        
         return list ;
         }
         
@@ -137,7 +162,7 @@ implements ZoneMatcher
     protected ResultSet<ZoneImpl> between(final Integer min, final Integer max)
         {
         log.debug("between() [{}][{}]", min, max);
-        long a = System.nanoTime();
+        long zonestart = System.nanoTime();
         final ResultSet<ZoneImpl>  results = zones.retrieve(
             QueryFactory.between(
                 ZoneMatcherImpl.ZONE_ID,
@@ -148,8 +173,10 @@ implements ZoneMatcher
                 )
             );
 
-        long b = System.nanoTime();
-        log.debug("Zone between took [{}µs][{}ns]", ((b -a)/1000), (b -a) );
+        long zonedone = System.nanoTime();
+        long zonediff = zonedone - zonestart;
+        this.zonetotal += zonediff;  
+        //log.debug("Zone between took [{}µs][{}ns]", ((zonediff)/1000), (zonediff) );
         return results ; 
         }
 
@@ -317,61 +344,22 @@ implements ZoneMatcher
         @Override
         public Iterable<Position> matches(final Position target, final Double radius)
             {
-            //log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
-            return filter(
-                target,
-                radius,
+            final Iterable<Position> results = filter(
                 query(
                     target,
                     radius
-                    )
+                    ),
+                target,
+                radius
                 );
+            return results;
             }
-
-        /**
-         * Check if a {@link Position} is within the search radius of a target {@link Position}
-         * by calculating the distance between the cartesian coordinates. 
-         *
-         */
-        protected boolean match(final Position target, final Double radius, final Position pos)
-            {
-            log.trace("Zone match() [{}][{}]:[{}][{}] [{}]", target.ra(), target.dec(), pos.ra(), pos.dec(), radius);
-            long a = System.nanoTime();
-            double squares =
-                    Math.pow(
-                        pos.cx() - target.cx(),
-                        2
-                        ) 
-                  + Math.pow(
-                        pos.cy() - target.cy(),
-                        2
-                        ) 
-                  + Math.pow(
-                      pos.cz() - target.cz(),
-                      2
-                      )
-                    ;
-            double squaresin = 4 * (
-                    Math.pow(
-                        Math.sin(
-                            Math.toRadians(
-                                radius
-                                )/2
-                            ),
-                        2)
-                    );
-
-            boolean result = (squaresin > squares) ;
-            long b = System.nanoTime();
-            log.debug("Zone cx/cy/zc compare [{}]>[{}]=[{}] took [{}µs][{}ns]", squaresin, squares, result, ((b -a)/1000), (b -a));
-            return result;
-            }
-    
+        
         /**
          * Filter a list of candidates, checking if they are within the search radius of a target {@link Position}.
          *
          */
-        protected Iterable<Position> filter(final Position target, final Double radius, final Iterable<PositionImpl> candidates)
+        protected Iterable<Position> filter(final Iterable<PositionImpl> candidates, final Position target, final Double radius)
             {
             return new Iterable<Position>()
                 {
@@ -393,7 +381,7 @@ implements ZoneMatcher
                                 {
                                 //log.trace("loop [{}]", count);
                                 final Position temp = iter.next();
-                                if (match(target, radius, temp))
+                                if (check(target, radius, temp))
                                     {
                                     return temp ;
                                     }
@@ -419,6 +407,47 @@ implements ZoneMatcher
                 };
             }
 
+        /**
+         * Check if a {@link Position} is within the search radius of a target {@link Position}
+         * by calculating the distance between the cartesian coordinates. 
+         *
+         */
+        protected boolean check(final Position target, final Double radius, final Position pos)
+            {
+            long mathstart = System.nanoTime();
+            double squares =
+                    Math.pow(
+                        pos.cx() - target.cx(),
+                        2
+                        ) 
+                  + Math.pow(
+                        pos.cy() - target.cy(),
+                        2
+                        ) 
+                  + Math.pow(
+                      pos.cz() - target.cz(),
+                      2
+                      )
+                    ;
+            double squaresin = 4 * (
+                    Math.pow(
+                        Math.sin(
+                            Math.toRadians(
+                                radius
+                                )/2
+                            ),
+                        2)
+                    );
+
+            boolean result = (squaresin > squares) ;
+            long mathend = System.nanoTime();
+            long mathdif = mathend - mathstart ;
+            mathtotal += mathdif ;
+            mathcount++;
+            //log.debug("Math cx/cy/zc compare [{}]>[{}]=[{}] took [{}µs][{}ns]", squaresin, squares, result, (mathdif/1000), (mathdif));
+            return result;
+            }
+        
         /**
          * Query our CQEngine collection for {@link Position}s within a search radius of a target {@link Position}.
          *
@@ -450,7 +479,8 @@ implements ZoneMatcher
                 );
  *
  */        
-            long a = System.nanoTime();
+            long radecstart = System.nanoTime();
+
             final ResultSet<PositionImpl> results = positions.retrieve(
                 QueryFactory.and(
                     QueryFactory.between(
@@ -469,8 +499,13 @@ implements ZoneMatcher
                         )
                     )
                 );
-            long b = System.nanoTime();
-            log.debug("Zone ra/dec query took [{}µs][{}ns]", ((b -a)/1000), (b -a) );
+
+            long radecdone = System.nanoTime();
+            long radecdiff = radecdone -radecstart;
+            radectotal += radecdiff;
+            radeccount++;
+
+            log.debug("Zone ra/dec query took [{}µs][{}ns]", (radecdiff/1000), (radecdiff) );
             return results ;
             }
 
