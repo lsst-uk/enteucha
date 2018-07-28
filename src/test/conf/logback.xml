@@ -28,7 +28,8 @@
           <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern>
+            <!--pattern>%date{ISO8601} %-5level [%thread] [%logger{0}] %message %n</pattern-->
+            <pattern>%date{HH:mm:ss.SSS} %-5level %message %n</pattern>
         </encoder>
     </appender>
 
