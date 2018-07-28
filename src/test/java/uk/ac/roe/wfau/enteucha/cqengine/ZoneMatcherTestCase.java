@@ -18,19 +18,16 @@
 
 package uk.ac.roe.wfau.enteucha.cqengine;
 
-import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.Matcher;
-import uk.ac.roe.wfau.enteucha.api.Position;
+import org.junit.Test;
+
 import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
-import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcher;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
 import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcher.IndexingShape;
-import uk.ac.roe.wfau.enteucha.cqengine.ZoneMatcherImpl;
 
 /**
  * 
  * 
  */
-@Slf4j
 public class ZoneMatcherTestCase
 extends AbstractTestCase
     {
@@ -48,7 +45,8 @@ extends AbstractTestCase
      * Test finding things.
      * 
      */
-    public void testFind004()
+    @Test
+    public void testFind()
         {
         for (IndexingShape indexshape : IndexingShape.values())
             {
@@ -73,4 +71,3 @@ extends AbstractTestCase
             }
         }
     }
-    

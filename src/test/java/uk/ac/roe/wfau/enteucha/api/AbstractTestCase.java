@@ -38,86 +38,6 @@ extends TestCase
     public AbstractTestCase()
         {
         }
-
-    /**
-     * Initialise our {@link Matcher}.
-     * 
-     */
-    public Matcher init(final Matcher matcher, double min, double max, double step)
-        {
-        log.debug("---- ---- ---- ----");
-        matcher.init();
-        log.debug("---- ---- ---- ----");
-        log.debug("Starting data insert");
-        long count = 0 ;
-        long nanostart = System.nanoTime();
-        for (double i = min ; i < max ; i += step)
-            {
-            for (double j = min ; j < max ; j += step)
-                {
-                matcher.insert(
-                    new PositionImpl(
-                        i,
-                        j
-                        )
-                    );
-                count++;
-                }
-            }
-        long nanoend  = System.nanoTime();
-        long nanodiff = nanoend - nanostart;
-        
-        log.debug("---- ---- ---- ----");
-        log.debug("Finished data insert");
-        log.info(
-            "Inserted [{}] in [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns]",
-            String.format("%,d", count),
-            (nanodiff/1000000000),
-            (nanodiff/1000000),
-            (nanodiff/1000),
-            (nanodiff),
-            (nanodiff/(count * 1000000)),
-            (nanodiff/(count * 1000)),
-            (nanodiff/count)
-            );
-        log.debug("---- ---- ---- ----");
-        return matcher;
-        }
-
-    /**
-     * Test our {@link Matcher}.
-     * 
-     */
-    public long match(final Matcher matcher, final Position target, Double radius) 
-        {
-        log.debug("---- ---- ---- ----");
-        log.debug("Starting crossmatch");
-        long nanostart = System.nanoTime();
-        Iterable<Position> matches = matcher.matches(
-            target,
-            radius
-            );
-        int count = 0 ;
-        for (Position match : matches)
-            {
-            log.debug("Found [{}][{}]", match.ra(), match.dec());
-            count++;
-            }
-        long nanoend = System.nanoTime();
-        long nanodiff = nanoend - nanostart ;
-        log.debug("---- ---- ---- ----");
-        log.debug("Finished crossmatch");
-        log.debug("Found [{}] in [{}ns]", count, nanodiff);
-        log.debug("---- ---- ---- ----");
-        return nanodiff ;
-        }
-
-    
-    //double spacing = 0.0025;  
-    //double radius  = 0.0025;  
-
-    double spacing = 0.0125;  
-    double radius  = 0.025;  
     
     /**
      * Test finding things.
@@ -125,44 +45,102 @@ extends TestCase
      */
     public void findtest(final Matcher.Factory factory)
         {
-        log.info("---- ----");
-        log.debug("Setting up test");
-        final Matcher matcher = this.init(
-            factory.create(),
-           -2.0,
-            2.0,
-            spacing
+        outer(
+            factory,
+            new PositionImpl(
+                120.0,
+                120.0
+                ),
+            0.01,
+            1.0
             );
-        long nanosec = 0 ;
-        long loop;
-        for(loop = 0 ; loop < 8 ; loop++)
+        }
+
+    int resolution = 9 ;
+    
+    public void outer(final Matcher.Factory factory, final Position target, double searchradius, double insertradius)
+        {
+        final Matcher matcher = factory.create();
+
+        matcher.insert(
+            target
+            );
+        
+        for (double a = 0 ; a < resolution ; a++)
             {
-            log.debug("Running crossmatch");
-            nanosec += this.match(
+            double b = Math.pow(2.0, a);
+            for (double c = -b ; c <= b ; c++)
+                {
+                for (double d = -b ; d <= b ; d++)
+                    {
+                    if ((c % 2) == 0)
+                        {
+                        if ((d % 2) == 0)
+                            {
+                            continue;
+                            }
+                        }
+                    matcher.insert(
+                        new PositionImpl(
+                            (target.ra()  + (insertradius * (-c/b))),
+                            (target.dec() + (insertradius * (+d/b)))
+                            )
+                        );
+                    }
+                }
+            inner(
                 matcher,
-                new PositionImpl(
-                    1.20,
-                    1.20
-                    ),
+                target,
+                searchradius
+                );
+            }
+        }
+
+    long repeat = 10 ;
+
+    public void inner(final Matcher matcher, final Position target, double radius)
+        {
+        long count = 0 ;
+        long nanosec = 0 ;
+        for(long loop = 0 ; loop < repeat ; loop++)
+            {
+            log.debug("---- ---- ---- ----");
+            log.debug("Starting crossmatch");
+            long nanostart = System.nanoTime();
+            Iterable<Position> matches = matcher.matches(
+                target,
                 radius
                 );
+            for (Position match : matches)
+                {
+                log.debug("Found [{}][{}]", match.ra(), match.dec());
+                count++;
+                }
+            long nanoend = System.nanoTime();
+            long nanodiff = nanoend - nanostart ;
+            log.debug("---- ---- ---- ----");
+            log.debug("Finished crossmatch");
+            log.debug("Found [{}] in [{}ns]", count, nanodiff);
+            log.debug("---- ---- ---- ----");
+            nanosec += nanodiff;
             }
         log.info(
             "Matcher [{}]",
             matcher.config()
             );
         log.info(
-            "Searched [{}] rows, [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
+            "Searched [{}] found [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
             String.format("%,d", matcher.total()),
-            loop,
+            (count/repeat),
+            repeat,
             (nanosec/1000000000),
             (nanosec/1000000),
             (nanosec/1000),
             (nanosec),
-            (nanosec/(loop * 1000000)),
-            (nanosec/(loop * 1000)),
-            (nanosec/loop),
-            (((nanosec/loop) < 1000000) ? "PASS" : "FAIL")
+            (nanosec/(repeat * 1000000)),
+            (nanosec/(repeat * 1000)),
+            (nanosec/repeat),
+            (((nanosec/repeat) < 1000000) ? "PASS" : "FAIL")
             );
         }
     }

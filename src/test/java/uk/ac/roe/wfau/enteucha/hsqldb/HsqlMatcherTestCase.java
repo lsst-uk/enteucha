@@ -18,17 +18,16 @@
 
 package uk.ac.roe.wfau.enteucha.hsqldb;
 
-import lombok.extern.slf4j.Slf4j;
-import uk.ac.roe.wfau.enteucha.api.Matcher;
-import uk.ac.roe.wfau.enteucha.api.PositionImpl;
+import org.junit.Test;
+
 import uk.ac.roe.wfau.enteucha.api.AbstractTestCase;
+import uk.ac.roe.wfau.enteucha.api.Matcher;
 import uk.ac.roe.wfau.enteucha.hsqldb.HsqlMatcherImpl.IndexingShape;
 
 /**
  * 
  * 
  */
-@Slf4j
 public class HsqlMatcherTestCase
 extends AbstractTestCase
     {
@@ -45,9 +44,9 @@ extends AbstractTestCase
     /**
      * Test finding things.
      * 
-    @Test
      */
-    public void testFind004()
+    @Test
+    public void testFind()
         {
         for (IndexingShape indexshape : IndexingShape.values())
             {

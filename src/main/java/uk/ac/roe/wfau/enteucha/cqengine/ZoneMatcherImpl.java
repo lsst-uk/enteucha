@@ -427,8 +427,9 @@ implements ZoneMatcher
             {
             log.debug("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
-            double minra = (target.ra() - radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
-            double maxra = (target.ra() + radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
+            double factor = radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon);
+            double minra = target.ra() - factor;
+            double maxra = target.ra() + factor;
 
             double mindec = (target.dec() - radius) ; 
             double maxdec = (target.dec() + radius) ; 

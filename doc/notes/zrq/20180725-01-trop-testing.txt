@@ -1,7 +1,7 @@
 #
 # <meta:header>
 #   <meta:licence>
-#     Copyright (c) 2017, ROE (http://www.roe.ac.uk/)
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
 #
 #     This information is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -209,7 +209,7 @@ EOF
             spacing = 0.0125  =>    103,041 rows
             spacing = 0.005   =>    641,601 rows
             spacing = 0.0025  =>  2,563,201 rows
-            spacing = 0.00125 => 10,246,401 rows (issues with locking up during insert ?)
+            spacing = 0.00125 => 10,246,401 rows (terminal locks up during insert ?)
             spacing = 0.0005  => 
 
 
@@ -280,7 +280,8 @@ EOF
 
 
     #
-    # Feels like a plateau at around 1ms. 
+    # Loooks like a plateau at around 1ms. 
+    # Something that isn't data size related.
     
 
     #
@@ -293,4 +294,7 @@ EOF
     # Query firethorn, write to Kafka stream.
     # Import into test from Kafka.
     # Kafka acts as a data store for the test.
-    
+
+
+
+

@@ -65,6 +65,7 @@ public class HsqlMatcherImpl implements Matcher
         {
         this.indexing = indexing;
         this.height = 180.0 / count ;
+        this.init();
         }
 
     /**
