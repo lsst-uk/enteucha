@@ -157,6 +157,11 @@ EOF
 # Build our code and run our tests.
 #[user@builder]
 
+    git config user.email "dave@example.com"
+    git config user.name  "Dave Morris"
+
+
+
     source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
         mvn clean test
