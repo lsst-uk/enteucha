@@ -238,14 +238,11 @@ implements ZoneMatcher
     public String config()
         {
         final StringBuilder builder = new StringBuilder(); 
-        builder.append("Class [");
-        builder.append(this.getClass().getSimpleName());
+        builder.append("Indexing [");
+        builder.append(this.indexing.name());
         builder.append("] ");
         builder.append("Total rows [");
         builder.append(String.format("%,d", this.total()));
-        builder.append("] ");
-        builder.append("Indexing [");
-        builder.append(this.indexing.name());
         builder.append("] ");
         builder.append("Zone height [");
         builder.append(this.height);
@@ -275,16 +272,13 @@ implements ZoneMatcher
         builder.append("Zone count [");
         builder.append(subcount);
         builder.append("] ");
-        builder.append("Zone total [");
-        builder.append(subtotal);
-        builder.append("] ");
-        builder.append("Avg zone size [");
+        builder.append("Zone size [");
         builder.append((subtotal/subcount));
         builder.append("] ");
-        builder.append("Max zone size [");
+        builder.append("[");
         builder.append((maxtotal));
         builder.append("] ");
-        builder.append("Min zone size [");
+        builder.append("[");
         builder.append((mintotal));
         builder.append("]");
         

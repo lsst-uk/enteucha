@@ -49,7 +49,7 @@
     virsh \
         -c "${connection:?}" \
         setmem \
-            "${vmname:?}" '32GB' \
+            "${vmname:?}" '64GB' \
             --config
 
     virsh \
