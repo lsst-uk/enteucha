@@ -45,6 +45,7 @@ extends TestCase
      */
     public void findtest(final Matcher.Factory factory)
         {
+        log.info("---- find start ----");
         outer(
             factory,
             new PositionImpl(
@@ -54,6 +55,25 @@ extends TestCase
             0.01,
             1.0
             );
+        try {
+            log.info("---- find finalize ----");
+            System.runFinalization();
+            Thread.sleep(10000);
+            }
+        catch (final InterruptedException ouch)
+            {
+            log.debug("InterruptedException [{}]", ouch);
+            }
+        try {
+            log.info("---- find gc ----");
+            System.gc();
+            Thread.sleep(10000);
+            }
+        catch (final InterruptedException ouch)
+            {
+            log.debug("InterruptedException [{}]", ouch);
+            }
+        log.info("---- find done ----");
         }
 
     int resolution = 9 ;
@@ -61,7 +81,6 @@ extends TestCase
     public void outer(final Matcher.Factory factory, final Position target, double searchradius, double insertradius)
         {
         final Matcher matcher = factory.create();
-
         matcher.insert(
             target
             );

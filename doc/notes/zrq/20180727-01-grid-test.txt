@@ -441,3 +441,10 @@ Unsorted data
         ' one.txt \
         | tee two.txt
 
+
+
+    vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+    int resolution = 11 ;
+
+    mvn clean test -D 'test=ZoneMatcherTestCase'
+
