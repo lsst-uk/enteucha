@@ -172,7 +172,6 @@ extends TestCase
                 "Searched [{}] radius [{}] found [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
                 String.format("%,d", matcher.total()),
                 radius,
-                matcher.height(),
                 (loopcount/this.looprepeat),
                 this.looprepeat,
                 (looptime/1000000000),

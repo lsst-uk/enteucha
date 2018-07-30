@@ -283,9 +283,6 @@ implements ZoneMatcher
         builder.append("Indexing [");
         builder.append(this.indexing.name());
         builder.append("] ");
-        builder.append("Total [");
-        builder.append(String.format("%,d", this.total()));
-        builder.append("] ");
         builder.append("Height [");
         builder.append(this.zoneheight);
         builder.append("] ");

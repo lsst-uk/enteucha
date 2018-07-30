@@ -43,13 +43,13 @@
     virsh \
         -c "${connection:?}" \
         setmaxmem \
-            "${vmname:?}" '64GB' \
+            "${vmname:?}" '100GB' \
             --config
 
     virsh \
         -c "${connection:?}" \
         setmem \
-            "${vmname:?}" '64GB' \
+            "${vmname:?}" '100GB' \
             --config
 
     virsh \
@@ -97,7 +97,7 @@
         free -h
 
                           total        used        free      shared  buff/cache   available
-            Mem:            58G        334M         57G        544K        679M         57G
+            Mem:            91G        308M         90G        544K        347M         90G
             Swap:          1.0G          0B        1.0G
 
 # -----------------------------------------------------
@@ -147,6 +147,7 @@ EOF
 
 # -----------------------------------------------------
 # Set the git username and email.
+# (needed to accept a merge commit when pull a new set of upstream changes onto an edited local copy) 
 #[user@builder]
 
     source "${HOME:?}/enteucha.settings"
@@ -166,15 +167,22 @@ EOF
 
         vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
 
-            0.001, // search radius
-            1.0,   // insert radius
-        -   10,    // insert depth
-        +   12,    // insert depth
-            10     // match repeat
+            int looprepeat = 10;
+
+            int    insertmin = 4;
+        ~   int    insertmax = 12;
+
+            double insertwidth = 2;
+
+            int zonemin = 2 ;
+            int zonemax = 8 ;
+
+            int radiusmin = 2 ;
+            int radiusmax = 6 ;
 
         vi src/test/conf/logback.xml
 
-            <level>DEBUG</level>
+        ~   <level>DEBUG</level>
 
     popd
 
@@ -185,6 +193,8 @@ EOF
     source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
 
+        mvn clean test
+        mvn clean test -D 'test=HsqlMatcherTestCase'
         mvn clean test -D 'test=ZoneMatcherTestCase'
 
     popd
