@@ -35,7 +35,7 @@ public interface Matcher
          * Create a new {@link Matcher}.
          *
          */
-        public Matcher create();
+        public Matcher create(double zoneheight);
 
         }
 
@@ -63,6 +63,12 @@ public interface Matcher
      */
     public long total();
 
+    /**
+     * Get the zone height for this {@link Matcher}. 
+     * 
+     */
+    public double height();
+    
     /**
      * Describe the {@link Matcher} configuration.
      * 

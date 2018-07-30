@@ -57,8 +57,14 @@ implements ZoneMatcher
      * The height in degrees of the {link Zone}s in this set.
      * 
      */
-    private double height ;
+    private double zoneheight ;
 
+    @Override
+    public double height()
+        {
+        return this.zoneheight;
+        }
+    
     /**
      * The {@link IndexingShape} for this {@link ZoneMatcher}.
      * 
@@ -87,10 +93,10 @@ implements ZoneMatcher
      * Public constructor.
      * 
      */
-    public ZoneMatcherImpl(final IndexingShape indexing, double count)
+    public ZoneMatcherImpl(final IndexingShape indexing, double zoneheight)
         {
         this.indexing = indexing ;
-        this.height = 180.0 / count ;
+        this.zoneheight = zoneheight ;
         }
 
     long zonetotal = 0 ;
@@ -105,7 +111,7 @@ implements ZoneMatcher
     @Override
     public Iterable<Position> matches(final Position target, final Double radius)
         {
-        //log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
+        log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
         this.zonetotal = 0 ;
         this.zonecount = 0 ;
@@ -128,9 +134,9 @@ implements ZoneMatcher
                 }
             }
 
-        log.debug("Math cx/cy/zc compare [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.mathcount),  (this.mathtotal/1000),  (this.mathtotal),  (this.mathtotal/(this.mathcount * 1000)),   (this.mathtotal/this.mathcount));
-        log.debug("Zone ra/dec/pos query [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.radeccount), (this.radectotal/1000), (this.radectotal), (this.radectotal/(this.radeccount * 1000)), (this.radectotal/this.radeccount));
-        log.debug("Zone between found [{}] from [{}] took [{}µs][{}ns]", (zonecount), zones.size(), ((zonetotal)/1000), (zonetotal) );
+        log.trace("Math cx/cy/zc compare [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.mathcount),  (this.mathtotal/1000),  (this.mathtotal),  (this.mathtotal/(this.mathcount * 1000)),   (this.mathtotal/this.mathcount));
+        log.trace("Zone ra/dec/pos query [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.radeccount), (this.radectotal/1000), (this.radectotal), (this.radectotal/(this.radeccount * 1000)), (this.radectotal/this.radeccount));
+        log.trace("Zone between found [{}] from [{}] took [{}µs][{}ns]", (zonecount), zones.size(), ((zonetotal)/1000), (zonetotal) );
         
         return list ;
         }
@@ -138,14 +144,14 @@ implements ZoneMatcher
     @Override
     public Iterable<Zone> contains(final Position target, final Double radius)
         {
-        //log.debug("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
-        //log.debug("height [{}]",  this.height);
+        //log.trace("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
+        //log.trace("height [{}]",  this.zoneheight);
 
-        final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
-        final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
+        final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
+        final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
 
-        //log.debug("min [{}]", min);
-        //log.debug("max [{}]", max);
+        //log.trace("min [{}]", min);
+        //log.trace("max [{}]", max);
 
         return new GenericIterable<Zone, ZoneImpl>(
             between(
@@ -161,7 +167,7 @@ implements ZoneMatcher
      */
     protected ResultSet<ZoneImpl> between(final Integer min, final Integer max)
         {
-        log.debug("between() [{}][{}]", min, max);
+        //log.trace("between() [{}][{}]", min, max);
         long zonestart = System.nanoTime();
         final ResultSet<ZoneImpl>  results = zones.retrieve(
             QueryFactory.between(
@@ -176,7 +182,7 @@ implements ZoneMatcher
         long zonedone = System.nanoTime();
         long zonediff = zonedone - zonestart;
         this.zonetotal += zonediff;  
-        //log.debug("Zone between took [{}µs][{}ns]", ((zonediff)/1000), (zonediff) );
+        //log.trace("Zone between took [{}µs][{}ns]", ((zonediff)/1000), (zonediff) );
         return results ; 
         }
 
@@ -217,7 +223,7 @@ implements ZoneMatcher
         {
         //log.trace("insert() [{}][{}]", position.ra(), position.dec());
         final Zone zone = select(
-                (int) Math.floor((position.dec() + 90) / this.height)
+                (int) Math.floor((position.dec() + 90) / this.zoneheight)
                 );
         //log.trace("Zone [{}]", zone.ident());
         zone.insert(
@@ -276,7 +282,7 @@ implements ZoneMatcher
         builder.append(String.format("%,d", this.total()));
         builder.append("] ");
         builder.append("Zone height [");
-        builder.append(this.height);
+        builder.append(this.zoneheight);
         builder.append("] ");
 
         long subcount = 0 ;
@@ -444,7 +450,7 @@ implements ZoneMatcher
             long mathdif = mathend - mathstart ;
             mathtotal += mathdif ;
             mathcount++;
-            //log.debug("Math cx/cy/zc compare [{}]>[{}]=[{}] took [{}µs][{}ns]", squaresin, squares, result, (mathdif/1000), (mathdif));
+            //log.trace("Math cx/cy/zc compare [{}]>[{}]=[{}] took [{}µs][{}ns]", squaresin, squares, result, (mathdif/1000), (mathdif));
             return result;
             }
         
@@ -454,7 +460,7 @@ implements ZoneMatcher
          */
         protected ResultSet<PositionImpl> query(final Position target, final Double radius)
             {
-            log.debug("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
+            //log.trace("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
             double factor = radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon);
             double minra = target.ra() - factor;
@@ -463,8 +469,8 @@ implements ZoneMatcher
             double mindec = (target.dec() - radius) ; 
             double maxdec = (target.dec() + radius) ; 
 
-            log.debug("min/max ra  [{}][{}]", minra,  maxra) ;
-            log.debug("min/max dec [{}][{}]", mindec, maxdec);
+            //log.trace("min/max ra  [{}][{}]", minra,  maxra) ;
+            //log.trace("min/max dec [{}][{}]", mindec, maxdec);
 /*
  *
  * TODO Make this configurable.
@@ -505,7 +511,7 @@ implements ZoneMatcher
             radectotal += radecdiff;
             radeccount++;
 
-            log.debug("Zone ra/dec query took [{}µs][{}ns]", (radecdiff/1000), (radecdiff) );
+            //log.trace("Zone ra/dec query took [{}µs][{}ns]", (radecdiff/1000), (radecdiff) );
             return results ;
             }
 
@@ -539,6 +545,7 @@ implements ZoneMatcher
             }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void init()
             {
             switch(ZoneMatcherImpl.this.indexing)
@@ -556,12 +563,14 @@ implements ZoneMatcher
                         );
                     break ;
                 case COMBINED:
+                    {
                     positions.addIndex(
                         CompoundIndex.onAttributes(
                             ZoneMatcherImpl.POS_RA,
                             ZoneMatcherImpl.POS_DEC
                             )
                         );
+                    }
                     break ;
                 default:
                     throw new IllegalArgumentException(
@@ -584,6 +593,12 @@ implements ZoneMatcher
             builder.append(String.format("%,d", this.total()));
             builder.append("]");
             return builder.toString();
+            }
+
+        @Override
+        public double height()
+            {
+            return ZoneMatcherImpl.this.zoneheight;
             }
         }
 

@@ -61,10 +61,10 @@ public class HsqlMatcherImpl implements Matcher
      * Public constructor.
      * 
      */
-    public HsqlMatcherImpl(final IndexingShape indexing, double count)
+    public HsqlMatcherImpl(final IndexingShape indexing, double zoneheight)
         {
         this.indexing = indexing;
-        this.height = 180.0 / count ;
+        this.zoneheight = zoneheight ;
         this.init();
         }
 
@@ -85,6 +85,24 @@ public class HsqlMatcherImpl implements Matcher
      */
     private IndexingShape indexing ;
 
+    /**
+     * Height of each zone slice.
+     * 
+     */
+    private double zoneheight ;
+
+    @Override
+    public double height()
+        {
+        return this.zoneheight;
+        }
+    
+    /**
+     * Small offset to avoid divide by zero.
+     * 
+     */
+    protected static final Double epsilon = 10E-6;
+    
     /**
      * The matcher database type.
      * 
@@ -153,7 +171,6 @@ public class HsqlMatcherImpl implements Matcher
      */
     public String url()
         {
-        log.trace("url()");
         final StringBuilder builder = new StringBuilder(
             "jdbc:hsqldb"
             ); 
@@ -211,7 +228,6 @@ public class HsqlMatcherImpl implements Matcher
                 //this.databasepass()
                 );            
             }
-        log.trace("source [{}]", this.source);
         return this.source;
         }
 
@@ -229,14 +245,10 @@ public class HsqlMatcherImpl implements Matcher
     protected Connection connect()
     throws SQLException
         {
-        log.trace("connect()");
         if (null == this.connection)
             {
             this.connection = this.source().getConnection();
             }
-
-        log.trace("source [{}]",     this.source);
-        log.trace("connection [{}]", this.connection);
         return this.connection; 
         }
 
@@ -247,7 +259,6 @@ public class HsqlMatcherImpl implements Matcher
      */
     public void init()
         {
-        log.trace("init");
         try {
             this.connect();
 
@@ -334,7 +345,6 @@ public class HsqlMatcherImpl implements Matcher
     public void done()
     throws SQLException
         {
-        log.debug("done");
         if (this.connection != null)
             {
             this.connection.close();
@@ -342,32 +352,20 @@ public class HsqlMatcherImpl implements Matcher
         this.connection = null ;
         }
 
-    /**
-     * Small offset to avoid divide by zero.
-     * 
-     */
-    protected static final Double epsilon = 10E-6;
-
-    /**
-     * Height of each zone slice.
-     * 
-     */
-    private Double height ;
-    
     @Override
     public Iterable<Position> matches(final Position target, final Double radius)
         {
-        log.debug("preparing");
+        //log.debug("preparing");
 
-        log.debug("radius [{}]", radius);
-        log.debug("height [{}]", height);
+        //log.debug("radius [{}]", radius);
+        //log.debug("height [{}]", zoneheight);
 
-        log.debug("ra  [{}]", target.ra());
-        log.debug("dec [{}]", target.dec());
+        //log.debug("ra  [{}]", target.ra());
+        //log.debug("dec [{}]", target.dec());
 
-        log.debug("cx  [{}]", target.cx());
-        log.debug("cy  [{}]", target.cy());
-        log.debug("cz  [{}]", target.cz());
+        //log.debug("cx  [{}]", target.cx());
+        //log.debug("cy  [{}]", target.cy());
+        //log.debug("cz  [{}]", target.cz());
 
         final String template = "SELECT "
             + "    zone, "
@@ -396,14 +394,14 @@ public class HsqlMatcherImpl implements Matcher
             + "    AND  "
             + "        ? > (power((cx - ?), 2) + power((cy - ?), 2) + power(cz - ?, 2)) ";
 
-        final int minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.height) ;
-        final int maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.height) ;
+        final int minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
+        final int maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
         
-        double minra = (target.ra() - radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
-        double maxra = (target.ra() + radius) / (Math.cos(Math.toRadians(Math.abs(target.dec()))) + epsilon);
+        double minra = target.ra() - (radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon));
+        double maxra = target.ra() + (radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon));
 
-        double mindec = (target.dec() - radius) ; 
-        double maxdec = (target.dec() + radius) ; 
+        double mindec = target.dec() - radius ; 
+        double maxdec = target.dec() + radius ; 
 
         double squaresin = 4 * (
                 Math.pow(
@@ -414,13 +412,17 @@ public class HsqlMatcherImpl implements Matcher
                         ),
                     2)
                 );
+
+        //log.debug("min/max zone [{}][{}]", minzone, maxzone);
+        //log.debug("min/max ra   [{}][{}]", minra, maxra);
+        //log.debug("min/max dec  [{}][{}]", mindec, maxdec);
         
         final List<Position> list = new ArrayList<Position>();
         try {
-            log.debug("preparing");
+            //log.debug("preparing");
             final PreparedStatement statement = connection.prepareStatement(template);
 
-            log.debug("setting");
+            //log.debug("setting");
             statement.setInt(1, minzone);
             statement.setInt(2, maxzone);            
             
@@ -436,7 +438,7 @@ public class HsqlMatcherImpl implements Matcher
             statement.setDouble(9,  target.cy());            
             statement.setDouble(10, target.cz());            
             
-            log.debug("executing");
+            //log.debug("executing");
             final ResultSet resultset = statement.executeQuery();
             while (resultset.next())
                 {
@@ -455,14 +457,14 @@ public class HsqlMatcherImpl implements Matcher
             {
             log.error("SQLException [{}]", ouch);
             }
-        log.debug("done");
+        //log.debug("done");
         return list;
         }
 
     @Override
     public void insert(Position position)
         {
-        log.trace("insert() [{}][{}]", position.ra(), position.dec());
+        //log.trace("insert() [{}][{}]", position.ra(), position.dec());
         String template = "INSERT INTO "
             + "    zones ( "
             + "        zone, "
@@ -481,7 +483,7 @@ public class HsqlMatcherImpl implements Matcher
             + "        ?"
             + "        ) ";
 
-        final Integer zone = (int) Math.floor((position.dec() + 90) / this.height);
+        final Integer zone = (int) Math.floor((position.dec() + 90) / this.zoneheight);
 
         try {
             final PreparedStatement statement = connection.prepareStatement(template);
@@ -498,55 +500,6 @@ public class HsqlMatcherImpl implements Matcher
             {
             log.error("SQLException during insert [{}]", ouch);
             }
-        }
-
-    public Iterable<Position> verify()
-        {
-        log.debug("preparing");
-
-        String query = "SELECT "
-            + "    zone, "
-            + "    ra, "
-            + "    dec,"
-            + "    cx, "
-            + "    cy, "
-            + "    cz  "
-            + " FROM "
-            + "    zones "
-            + " WHERE "
-            + "    zone BETWEEN "
-            + "        :zonemin "
-            + "    AND "
-            + "        :zonemax ";
-                
-        final NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(
-            this.source()
-            );
-
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("zonemin",     0.0);
-        params.addValue("zonemax",  1000.0);
-        
-        log.debug("querying");
-        final SqlRowSet rowset = template.queryForRowSet(
-            query,
-            params
-            );
-        final List<Position> list = new ArrayList<Position>();
-        while (rowset.next())
-            {
-            list.add(
-                new PositionImpl(
-                    rowset.getDouble(2),                        
-                    rowset.getDouble(3),                        
-                    rowset.getDouble(4),                        
-                    rowset.getDouble(5),                        
-                    rowset.getDouble(6)                        
-                    )
-                );
-            }
-        log.debug("done");
-        return list;
         }
 
     private long total = 0;
@@ -569,6 +522,9 @@ public class HsqlMatcherImpl implements Matcher
         builder.append("] ");
         builder.append("Total rows [");
         builder.append(String.format("%,d", this.total()));
+        builder.append("] ");
+        builder.append("Zone height [");
+        builder.append(this.zoneheight);
         builder.append("] ");
         builder.append("URL [");
         builder.append(this.url());

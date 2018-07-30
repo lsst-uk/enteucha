@@ -50,24 +50,20 @@ extends AbstractTestCase
         {
         for (IndexingShape indexshape : IndexingShape.values())
             {
-            for (int power = 1 ; power < 7 ; power++ )
-                {
-                final double zonecount = Math.pow(10.0, power);
-                final IndexingShape indexing = indexshape ;
-                findtest(
-                    new Matcher.Factory()
+            final IndexingShape indexing = indexshape ;
+            findtest(
+                new Matcher.Factory()
+                    {
+                    @Override
+                    public Matcher create(double zoneheight)
                         {
-                        @Override
-                        public Matcher create()
-                            {
-                            return new HsqlMatcherImpl(
-                                indexing,
-                                zonecount
-                                );
-                            }
+                        return new HsqlMatcherImpl(
+                            indexing,
+                            zoneheight
+                            );
                         }
-                    );
-                }
+                    }
+                );
             }
         }
     }
