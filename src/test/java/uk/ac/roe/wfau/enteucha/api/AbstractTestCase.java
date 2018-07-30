@@ -41,10 +41,15 @@ extends TestCase
 
     int looprepeat = 10;    
    
-    int    insertdepth = 9;
-    double insertrange = 2;
+    int    insertmin = 4;
+    int    insertmax = 10;
+    double insertwidth = 2;
 
-    int grain = -6 ;
+    int zonemin = 2 ;
+    int zonemax = 8 ;
+
+    int radiusmin = 2 ;
+    int radiusmax = 6 ;
     
     /**
      * Test finding things.
@@ -83,9 +88,9 @@ extends TestCase
 
     public void outer(final Matcher.Factory factory, final Position target)
         {
-        for (int zexp = 0 ; zexp > (this.grain - 2) ; zexp-- )
+        for (int exponent = this.zonemin ; exponent <= this.zonemax ; exponent++ )
             {
-            double zoneheight = Math.pow(2.0, zexp);
+            double zoneheight = Math.pow(2.0, -exponent);
             log.info("---- Zone height [{}]", zoneheight);
             final Matcher matcher = factory.create(
                 zoneheight
@@ -93,7 +98,7 @@ extends TestCase
             matcher.insert(
                 target
                 );
-            for (double a = 0 ; a < insertdepth ; a++)
+            for (double a = insertmin ; a < insertmax ; a++)
                 {
                 double b = Math.pow(2.0, a);
                 log.info("---- Insert depth [{}][{}]", a, b);
@@ -110,8 +115,8 @@ extends TestCase
                             }
                         matcher.insert(
                             new PositionImpl(
-                                (target.ra()  + (insertrange * (-c/b))),
-                                (target.dec() + (insertrange * (+d/b)))
+                                (target.ra()  + (insertwidth * (-c/b))),
+                                (target.dec() + (insertwidth * (+d/b)))
                                 )
                             );
                         }
@@ -126,9 +131,9 @@ extends TestCase
 
     public void inner(final Matcher matcher, final Position target)
         {
-        for (int rexp = 0 ; rexp > this.grain ; rexp-- )
+        for (int exponent = this.radiusmin ; exponent <= this.radiusmax ; exponent++ )
             {
-            double radius = Math.pow(2.0, rexp);
+            double radius = Math.pow(2.0, -exponent);
             log.info("---- Search radius[{}]", radius);
 
             long looptime  = 0 ;
@@ -161,11 +166,10 @@ extends TestCase
                 //log.debug("Found [{}] in [{}ms][{}µs][{}ns]", matchcount, (innertime/1000000), (innertime/1000), innertime);
                 }
             log.info(
-                "Matcher [{}]",
-                matcher.config()
+                matcher.info()
                 );
             log.info(
-                "Searched [{}] radius [{}] zone [{}] found [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
+                "Searched [{}] radius [{}] found [{}] in [{}] loops, total [{}s][{}ms][{}µs][{}ns], average [{}ms][{}µs][{}ns] {}",
                 String.format("%,d", matcher.total()),
                 radius,
                 matcher.height(),

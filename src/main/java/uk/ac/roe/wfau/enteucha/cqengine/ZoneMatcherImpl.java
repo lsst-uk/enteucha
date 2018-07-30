@@ -29,6 +29,7 @@ import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.compound.CompoundIndex;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
+import com.googlecode.cqengine.quantizer.DoubleQuantizer;
 import com.googlecode.cqengine.query.QueryFactory;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
@@ -75,6 +76,7 @@ implements ZoneMatcher
      * The {@link IndexingShape} for this {@link ZoneMatcher}.
      * 
      */
+    @Override
     public IndexingShape indexing()
         {
         return this.indexing;
@@ -272,16 +274,19 @@ implements ZoneMatcher
         };
 
     @Override
-    public String config()
+    public String info()
         {
         final StringBuilder builder = new StringBuilder(); 
+        builder.append("Class [");
+        builder.append(this.getClass().getSimpleName());
+        builder.append("] ");
         builder.append("Indexing [");
         builder.append(this.indexing.name());
         builder.append("] ");
-        builder.append("Total rows [");
+        builder.append("Total [");
         builder.append(String.format("%,d", this.total()));
         builder.append("] ");
-        builder.append("Zone height [");
+        builder.append("Height [");
         builder.append(this.zoneheight);
         builder.append("] ");
 
@@ -550,7 +555,7 @@ implements ZoneMatcher
             {
             switch(ZoneMatcherImpl.this.indexing)
                 {
-                case SEPARATE:
+                case SEPARATE_SIMPLE:
                     positions.addIndex(
                         NavigableIndex.onAttribute(
                             ZoneMatcherImpl.POS_RA
@@ -562,7 +567,24 @@ implements ZoneMatcher
                             )
                         );
                     break ;
-                case COMBINED:
+
+                case SEPARATE_QUANTIZED:
+                    positions.addIndex(
+                        NavigableIndex.withQuantizerOnAttribute(
+                            DoubleQuantizer.withCompressionFactor(
+                                5
+                                ),
+                            ZoneMatcherImpl.POS_RA
+                            )
+                        );
+                    positions.addIndex(
+                        NavigableIndex.onAttribute(
+                            ZoneMatcherImpl.POS_DEC
+                            )
+                        );
+                break ;
+                
+                case COMBINED_SIMPLE:
                     {
                     positions.addIndex(
                         CompoundIndex.onAttributes(
@@ -580,7 +602,7 @@ implements ZoneMatcher
             }
 
         @Override
-        public String config()
+        public String info()
             {
             final StringBuilder builder = new StringBuilder(); 
             builder.append("Class [");
@@ -599,6 +621,12 @@ implements ZoneMatcher
         public double height()
             {
             return ZoneMatcherImpl.this.zoneheight;
+            }
+
+        @Override
+        public Enum<?> indexing()
+            {
+            return ZoneMatcherImpl.this.indexing;
             }
         }
 

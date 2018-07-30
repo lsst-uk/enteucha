@@ -85,6 +85,12 @@ public class HsqlMatcherImpl implements Matcher
      */
     private IndexingShape indexing ;
 
+    @Override
+    public IndexingShape indexing()
+        {
+        return this.indexing;
+        }
+
     /**
      * Height of each zone slice.
      * 
@@ -511,7 +517,7 @@ public class HsqlMatcherImpl implements Matcher
         }
 
     @Override
-    public String config()
+    public String info()
         {
         final StringBuilder builder = new StringBuilder(); 
         builder.append("Class [");

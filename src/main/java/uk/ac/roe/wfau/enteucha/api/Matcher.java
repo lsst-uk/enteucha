@@ -73,6 +73,12 @@ public interface Matcher
      * Describe the {@link Matcher} configuration.
      * 
      */
-    public String config();
+    public String info();
 
+    /**
+     * Get the indexing shape for this {@link Matcher}.
+     * 
+     */
+    public Enum<?> indexing();
+    
     }

@@ -57,8 +57,9 @@ extends Matcher
      */
     public enum IndexingShape
         {
-        SEPARATE(),
-        COMBINED();
+        SEPARATE_SIMPLE(),
+        COMBINED_SIMPLE(),
+        SEPARATE_QUANTIZED();
         };
 
     /**
