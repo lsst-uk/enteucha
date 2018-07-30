@@ -166,8 +166,11 @@ EOF
 
         vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
 
-            int resolution = 11 ; // 1,050,625
-            int resolution = 12 ; // 4,198,401
+            0.001, // search radius
+            1.0,   // insert radius
+        -   10,    // insert depth
+        +   12,    // insert depth
+            10     // match repeat
 
         vi src/test/conf/logback.xml
 
@@ -185,4 +188,22 @@ EOF
         mvn clean test -D 'test=ZoneMatcherTestCase'
 
     popd
+
+
+
+
+
+21:31:27.313 DEBUG Zone ra/dec query took [16?s][16079ns] 
+21:31:27.313 DEBUG Math cx/cy/zc compare [45] took [8?s][8812ns] avg [0?s][195ns] 
+21:31:27.313 DEBUG Zone ra/dec/pos query [5] took [85?s][85132ns] avg [17?s][17026ns] 
+21:31:27.313 DEBUG Zone between found [5] from [4097] took [2?s][2322ns] 
+21:31:27.313 DEBUG ---- ---- ---- ---- 
+21:31:27.313 DEBUG Finished crossmatch 
+21:31:27.313 DEBUG Found [25] in [1213?s 1213847ns][3?s 3953ns][1217?s 1217800ns] 
+21:31:27.313 DEBUG ---- ---- ---- ---- 
+21:31:27.315 INFO  Matcher [Indexing [SEPARATE] Total rows [16,785,409] Zone height [1.8E-4] Zone count [4097] Zone size [4097][4097][4097]] 
+21:31:27.315 INFO  Searched [16,785,409] found [25] in [10] loops, total [0s][23ms][23642?s][23642893ns], average [2ms][2364?s][2364289ns] FAIL 
+
+
+
 
