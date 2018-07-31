@@ -43,7 +43,9 @@ import uk.ac.roe.wfau.enteucha.util.GenericIterable;
 
 /**
  * A CQEngine based implementation of {@link ZoneMatcher}
- * 
+ * TODO Add validation for out of range values.
+ * TODO Add +360 and -360 copies for positions within margins of ra = 0 or 360.
+ *  
  */
 @Slf4j
 public class ZoneMatcherImpl
@@ -151,8 +153,8 @@ implements ZoneMatcher
         //log.trace("contains() [{}][{}][{}]", target.ra(), target.dec(), radius);
         //log.trace("height [{}]",  this.zoneheight);
 
-        final Integer min = (int) Math.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
-        final Integer max = (int) Math.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
+        final Integer min = (int) FastMath.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
+        final Integer max = (int) FastMath.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
 
         //log.trace("min [{}]", min);
         //log.trace("max [{}]", max);
@@ -227,7 +229,7 @@ implements ZoneMatcher
         {
         //log.trace("insert() [{}][{}]", position.ra(), position.dec());
         final Zone zone = select(
-                (int) Math.floor((position.dec() + 90) / this.zoneheight)
+                (int) FastMath.floor((position.dec() + 90) / this.zoneheight)
                 );
         //log.trace("Zone [{}]", zone.ident());
         zone.insert(
@@ -466,7 +468,7 @@ implements ZoneMatcher
             {
             //log.trace("query() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
-            double factor = radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon);
+            double factor = radius / (FastMath.abs(FastMath.cos(FastMath.toRadians(target.dec()))) + epsilon);
             double minra = target.ra() - factor;
             double maxra = target.ra() + factor;
 

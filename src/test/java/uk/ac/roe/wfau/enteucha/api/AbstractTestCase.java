@@ -43,16 +43,19 @@ extends TestCase
 
     int looprepeat = 10;    
 
-    double insertwidth = 2;
-   
-    int insertmin = 4;
+    double spread = 2;
+
+    int spreadmin = 1;
+    int spreadmax = 7;
+
+    int insertmin = 8;
     int insertmax = 10;
 
-    int zonemin = 2 ;
+    int zonemin = 6 ;
     int zonemax = 8 ;
 
-    int radiusmin = 2 ;
-    int radiusmax = 6 ;
+    int radiusmin = 6 ;
+    int radiusmax = 8 ;
     
     /**
      * Test finding things.
@@ -68,8 +71,7 @@ extends TestCase
         log.info("Target [{}][{}]", target.ra(), target.dec());
         for (int exponent = this.zonemin ; exponent <= this.zonemax ; exponent++ )
             {
-            //double zoneheight = Math.pow(2.0, -exponent);
-            double zoneheight = FastMath.pow(2.0, exponent);
+            double zoneheight = FastMath.pow(2.0, -exponent);
             log.info("Zone height [{}]", zoneheight);
             final Matcher matcher = factory.create(
                 zoneheight
@@ -79,10 +81,9 @@ extends TestCase
                 );
             for (double a = 0 ; a < insertmax ; a++)
                 {
-                //double b = Math.pow(2.0, a);
                 double b = FastMath.pow(2.0, a);
                 log.info("Insert depth [{}][{}]", a, b);
-                log.info("Memory [{}][{}][{}]", runtime.totalMemory(), runtime.freeMemory(), runtime.maxMemory());
+                log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
                 for (double c = -b ; c <= b ; c++)
                     {
                     long cmantissa = Double.doubleToLongBits(c) & 0x000fffffffffffffL ;
@@ -101,14 +102,15 @@ extends TestCase
                             }
                         matcher.insert(
                             new PositionImpl(
-                                (target.ra()  + (insertwidth * (-c/b))),
-                                (target.dec() + (insertwidth * (+d/b)))
+                                (target.ra()  + (spread * (-c/b))),
+                                (target.dec() + (spread * (+d/b)))
                                 )
                             );
                         }
                     }
                 if (a >= insertmin)
                     {
+                    log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
                     innerloop(
                         matcher,
                         target 
@@ -141,7 +143,6 @@ extends TestCase
         {
         for (int exponent = this.radiusmin ; exponent <= this.radiusmax ; exponent++ )
             {
-            //double radius = Math.pow(2.0, -exponent);
             double radius = FastMath.pow(2.0, -exponent);
             log.info("---- Search radius[{}]", radius);
 
@@ -157,7 +158,6 @@ extends TestCase
                     target,
                     radius
                     );
-                //long innermid = System.nanoTime();
                 for (Position match : matches)
                     {
                     //log.debug("Found [{}][{}]", match.ra(), match.dec());
@@ -165,8 +165,6 @@ extends TestCase
                     //matchcount++;
                     }
                 long innerend = System.nanoTime();
-                //long innerone = innermid - innerstart ;
-                //long innertwo = innerend - innermid ;
                 long innertime = innerend - innerstart;
                 looptime += innertime ;
                 //log.debug("---- ---- ---- ----");
@@ -193,6 +191,30 @@ extends TestCase
                 (((looptime/this.looprepeat) < 1000000) ? "PASS" : "FAIL")
                 );
             }
+        }
+
+    /**
+     * Format a data size as a human readable String.
+     * https://programming.guide/java/formatting-byte-size-to-human-readable-format.html 
+     * 
+     */
+    public static String humanSize(long bytes)
+        {
+        return humanSize(bytes, false);
+        }
+    
+    /**
+     * Format a data size as a human readable String.
+     * https://programming.guide/java/formatting-byte-size-to-human-readable-format.html 
+     * 
+     */
+    public static String humanSize(long bytes, boolean si)
+        {
+        int unit = (si) ? 1000 : 1024;
+        if (bytes < unit) return bytes + " B";
+        int exponent = (int) (Math.log(bytes) / Math.log(unit));
+        final String prefix = (si ? "kMGTPE" : "KMGTPE").charAt(exponent-1) + (si ? "" : "i");
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exponent), prefix);
         }
     }
 

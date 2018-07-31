@@ -230,7 +230,36 @@ EOF
             14:27:55.375 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
             14:27:55.375 INFO  Searched [67,125,249] radius [9.765625E-4] found [22] in [10] loops, total [0s][5ms][5108?s][5108970ns], average [0ms][510?s][510897ns] PASS 
 
+            14:27:55.376 INFO  Memory [22513975296][2437354672][22513975296] 
+
             ....
             ....
             
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+            int looprepeat = 10;
+
+            int    insertmin = 12;
+            int    insertmax = 13;
+            double insertwidth = 2;
+
+            int zonemin =  8 ;
+            int zonemax = 10 ;
+
+            int radiusmin =  8 ;
+            int radiusmax = 10 ;
+
+        vi pom.xml
+
+            <argLine>-Xmx90G -Xms90G</argLine>
+
+        mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
+
 

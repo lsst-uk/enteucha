@@ -28,10 +28,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.apache.commons.math3.util.FastMath;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.Matcher;
@@ -400,19 +398,19 @@ public class HsqlMatcherImpl implements Matcher
             + "    AND  "
             + "        ? > (power((cx - ?), 2) + power((cy - ?), 2) + power(cz - ?, 2)) ";
 
-        final int minzone = (int) Math.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
-        final int maxzone = (int) Math.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
+        final int minzone = (int) FastMath.floor(((target.dec() + 90) - radius) / this.zoneheight) ;
+        final int maxzone = (int) FastMath.floor(((target.dec() + 90) + radius) / this.zoneheight) ;
         
-        double minra = target.ra() - (radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon));
-        double maxra = target.ra() + (radius / (Math.abs(Math.cos(Math.toRadians(target.dec()))) + epsilon));
+        double minra = target.ra() - (radius / (FastMath.abs(FastMath.cos(FastMath.toRadians(target.dec()))) + epsilon));
+        double maxra = target.ra() + (radius / (FastMath.abs(FastMath.cos(FastMath.toRadians(target.dec()))) + epsilon));
 
         double mindec = target.dec() - radius ; 
         double maxdec = target.dec() + radius ; 
 
         double squaresin = 4 * (
-                Math.pow(
-                    Math.sin(
-                        Math.toRadians(
+                FastMath.pow(
+                    FastMath.sin(
+                        FastMath.toRadians(
                             radius
                             )/2
                         ),
@@ -489,7 +487,7 @@ public class HsqlMatcherImpl implements Matcher
             + "        ?"
             + "        ) ";
 
-        final Integer zone = (int) Math.floor((position.dec() + 90) / this.zoneheight);
+        final Integer zone = (int) FastMath.floor((position.dec() + 90) / this.zoneheight);
 
         try {
             final PreparedStatement statement = connection.prepareStatement(template);

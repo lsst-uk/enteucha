@@ -48,7 +48,12 @@ extends AbstractTestCase
     @Test
     public void testFind()
         {
-        for (IndexingShape indexshape : IndexingShape.values())
+        IndexingShape[] shapes =
+            {
+            IndexingShape.SEPARATE_SIMPLE,
+            IndexingShape.COMBINED_SIMPLE
+            };
+        for (IndexingShape indexshape : shapes)
             {
             final IndexingShape indexing = indexshape ;
             outerloop(
