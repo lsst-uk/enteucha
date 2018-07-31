@@ -18,6 +18,8 @@
 
 package uk.ac.roe.wfau.enteucha.api;
 
+import org.apache.commons.math3.util.FastMath;
+
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.roe.wfau.enteucha.api.Matcher;
@@ -40,10 +42,11 @@ extends TestCase
         }
 
     int looprepeat = 10;    
-   
-    int    insertmin = 4;
-    int    insertmax = 10;
+
     double insertwidth = 2;
+   
+    int insertmin = 4;
+    int insertmax = 10;
 
     int zonemin = 2 ;
     int zonemax = 8 ;
@@ -65,7 +68,8 @@ extends TestCase
         log.info("Target [{}][{}]", target.ra(), target.dec());
         for (int exponent = this.zonemin ; exponent <= this.zonemax ; exponent++ )
             {
-            double zoneheight = Math.pow(2.0, -exponent);
+            //double zoneheight = Math.pow(2.0, -exponent);
+            double zoneheight = FastMath.pow(2.0, exponent);
             log.info("Zone height [{}]", zoneheight);
             final Matcher matcher = factory.create(
                 zoneheight
@@ -75,7 +79,8 @@ extends TestCase
                 );
             for (double a = 0 ; a < insertmax ; a++)
                 {
-                double b = Math.pow(2.0, a);
+                //double b = Math.pow(2.0, a);
+                double b = FastMath.pow(2.0, a);
                 log.info("Insert depth [{}][{}]", a, b);
                 log.info("Memory [{}][{}][{}]", runtime.totalMemory(), runtime.freeMemory(), runtime.maxMemory());
                 for (double c = -b ; c <= b ; c++)
@@ -87,9 +92,9 @@ extends TestCase
                         }
                     for (double d = -b ; d <= b ; d++)
                         {
-                        if ((c % 2) == 0)
+                        if ((((long)c) % 2) == 0)
                             {
-                            if ((d % 2) == 0)
+                            if ((((long) d) % 2) == 0)
                                 {
                                 continue;
                                 }
@@ -136,7 +141,8 @@ extends TestCase
         {
         for (int exponent = this.radiusmin ; exponent <= this.radiusmax ; exponent++ )
             {
-            double radius = Math.pow(2.0, -exponent);
+            //double radius = Math.pow(2.0, -exponent);
+            double radius = FastMath.pow(2.0, -exponent);
             log.info("---- Search radius[{}]", radius);
 
             long looptime  = 0 ;

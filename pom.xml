@@ -157,6 +157,16 @@
         </dependency>
 
         <!--+
+            | Apache Commons Math.
+            | http://commons.apache.org/proper/commons-math/index.html
+            +-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+
+        <!--+
             | FireThorn Spring dependencies.
             +-->
         <dependency>

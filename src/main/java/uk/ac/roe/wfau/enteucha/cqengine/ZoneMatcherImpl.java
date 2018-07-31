@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.math3.util.FastMath;
+
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
@@ -113,7 +115,7 @@ implements ZoneMatcher
     @Override
     public Iterable<Position> matches(final Position target, final Double radius)
         {
-        log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
+        //log.trace("matches() [{}][{}][{}]", target.ra(), target.dec(), radius);
 
         this.zonetotal = 0 ;
         this.zonecount = 0 ;
@@ -136,9 +138,9 @@ implements ZoneMatcher
                 }
             }
 
-        log.trace("Math cx/cy/zc compare [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.mathcount),  (this.mathtotal/1000),  (this.mathtotal),  (this.mathtotal/(this.mathcount * 1000)),   (this.mathtotal/this.mathcount));
-        log.trace("Zone ra/dec/pos query [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.radeccount), (this.radectotal/1000), (this.radectotal), (this.radectotal/(this.radeccount * 1000)), (this.radectotal/this.radeccount));
-        log.trace("Zone between found [{}] from [{}] took [{}µs][{}ns]", (zonecount), zones.size(), ((zonetotal)/1000), (zonetotal) );
+        //log.trace("Math cx/cy/zc compare [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.mathcount),  (this.mathtotal/1000),  (this.mathtotal),  (this.mathtotal/(this.mathcount * 1000)),   (this.mathtotal/this.mathcount));
+        //log.trace("Zone ra/dec/pos query [{}] took [{}µs][{}ns] avg [{}µs][{}ns]", (this.radeccount), (this.radectotal/1000), (this.radectotal), (this.radectotal/(this.radeccount * 1000)), (this.radectotal/this.radeccount));
+        //log.trace("Zone between found [{}] from [{}] took [{}µs][{}ns]", (zonecount), zones.size(), ((zonetotal)/1000), (zonetotal) );
         
         return list ;
         }
@@ -424,23 +426,23 @@ implements ZoneMatcher
             {
             long mathstart = System.nanoTime();
             double squares =
-                    Math.pow(
+                    FastMath.pow(
                         pos.cx() - target.cx(),
                         2
                         ) 
-                  + Math.pow(
+                  + FastMath.pow(
                         pos.cy() - target.cy(),
                         2
                         ) 
-                  + Math.pow(
+                  + FastMath.pow(
                       pos.cz() - target.cz(),
                       2
                       )
                     ;
             double squaresin = 4 * (
-                    Math.pow(
-                        Math.sin(
-                            Math.toRadians(
+                    FastMath.pow(
+                        FastMath.sin(
+                            FastMath.toRadians(
                                 radius
                                 )/2
                             ),

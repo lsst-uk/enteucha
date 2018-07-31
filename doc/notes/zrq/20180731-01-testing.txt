@@ -193,3 +193,44 @@ EOF
     popd
 
 
+
+
+# -----------------------------------------------------
+# -----------------------------------------------------
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+            int looprepeat = 10;
+
+            int    insertmin = 12;
+            int    insertmax = 13;
+            double insertwidth = 2;
+
+            int zonemin =  8 ;
+            int zonemax = 10 ;
+
+            int radiusmin =  8 ;
+            int radiusmax = 10 ;
+
+        mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
+
+            ....
+            ....
+            
+            14:27:55.298 INFO  ---- Search radius[0.00390625] 
+            14:27:55.359 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+            14:27:55.359 INFO  Searched [67,125,249] radius [0.00390625] found [391] in [10] loops, total [0s][51ms][51934?s][51934071ns], average [5ms][5193?s][5193407ns] FAIL 
+            14:27:55.360 INFO  ---- Search radius[0.001953125] 
+            14:27:55.369 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+            14:27:55.369 INFO  Searched [67,125,249] radius [0.001953125] found [94] in [10] loops, total [0s][7ms][7115?s][7115236ns], average [0ms][711?s][711523ns] PASS 
+            14:27:55.369 INFO  ---- Search radius[9.765625E-4] 
+            14:27:55.375 INFO  Class [ZoneMatcherImpl] Indexing [SEPARATE_SIMPLE] Height [0.00390625] Zone count [1025] Zone size [65488][65544][8193] 
+            14:27:55.375 INFO  Searched [67,125,249] radius [9.765625E-4] found [22] in [10] loops, total [0s][5ms][5108?s][5108970ns], average [0ms][510?s][510897ns] PASS 
+
+            ....
+            ....
+            
+
