@@ -1,0 +1,195 @@
+#
+# <meta:header>
+#   <meta:licence>
+#     Copyright (c) 2018, ROE (http://www.roe.ac.uk/)
+#
+#     This information is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This information is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#  
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   </meta:licence>
+# </meta:header>
+#
+#
+
+# -----------------------------------------------------
+# Trop VM settings.
+#[user@trop03]
+    
+    createvm
+
+        INFO : Node name [Umiawyth]
+        INFO : Base name [fedora-28-docker-base-20180708.qcow]
+        INFO : Base path [/var/lib/libvirt/images/base/fedora-28-docker-base-20180708.qcow]
+        INFO : Disc name [Umiawyth.qcow]
+        INFO : Disc size [16GiB]
+
+    vmname=Umiawyth
+
+# -----------------------------------------------------
+# Modify the VM memory allocation from 16G to 64G.
+#[user@trop03]
+
+    source "${HOME}/libvirt.settings" 
+
+    virsh \
+        -c "${connection:?}" \
+        setmaxmem \
+            "${vmname:?}" '100GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setmem \
+            "${vmname:?}" '100GB' \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --maximum \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        setvcpus \
+            "${vmname:?}" 8 \
+            --config
+
+    virsh \
+        -c "${connection:?}" \
+        shutdown \
+            "${vmname:?}"
+
+    sleep 20
+    
+    virsh \
+        -c "${connection:?}" \
+        start \
+            "${vmname:?}"
+
+# -----------------------------------------------------
+# Login to the VM and check the resources.
+#[user@trop03]
+
+    ssh "${vmname:?}"
+
+        cat /proc/cpuinfo | grep processor
+
+            processor	: 0
+            processor	: 1
+            processor	: 2
+            processor	: 3
+            processor	: 4
+            processor	: 5
+            processor	: 6
+            processor	: 7
+
+        free -h
+
+                          total        used        free      shared  buff/cache   available
+            Mem:            91G        304M         90G        536K        351M         90G
+            Swap:          1.0G          0B        1.0G
+
+# -----------------------------------------------------
+# Run our Java builder.
+#[user@virtual]
+
+        docker run \
+            --rm  \
+            --tty \
+            --interactive \
+            firethorn/builder:2.1.25 \
+            bash 
+
+# -----------------------------------------------------
+# Builder settings
+#[user@builder]
+
+cat > "${HOME}/enteucha.settings" << 'EOF'
+BUILD_HOME=/var/local/build/
+ENTEUCHA_BASE="${BUILD_HOME:?}/enteucha"
+ENTEUCHA_CODE="${ENTEUCHA_BASE:?}/github.zrq"
+#NTEUCHA_REPO='git@github.com:lsst-uk/enteucha.git'
+#NTEUCHA_REPO='git@github.com:Zarquan/enteucha.git'
+ENTEUCHA_REPO='https://github.com/Zarquan/enteucha.git'
+EOF
+
+# -----------------------------------------------------
+# Checkout a copy of our source code.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    if [ ! -e "${ENTEUCHA_CODE:?}" ]
+    then
+        if [ ! -e "$(dirname ${ENTEUCHA_CODE:?})" ]
+        then
+            mkdir -p "$(dirname ${ENTEUCHA_CODE:?})"
+        fi
+        pushd "$(dirname ${ENTEUCHA_CODE:?})"
+            git clone "${ENTEUCHA_REPO:?}" "$(basename ${ENTEUCHA_CODE:?})"
+
+        popd
+    else
+        pushd "${ENTEUCHA_CODE:?}"
+            git pull
+        popd
+    fi
+
+# -----------------------------------------------------
+# Set the git username and email.
+# (needed to accept a merge commit when pull a new set of upstream changes onto an edited local copy) 
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        git config user.email "ident@example.com"
+        git config user.name  "Example Identity"
+
+    popd
+
+# -----------------------------------------------------
+# Edit the test resolution.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
+
+            int looprepeat = 10;
+
+            int    insertmin = 12;
+            int    insertmax = 13;
+            double insertwidth = 2;
+
+            int zonemin = 8  ;
+            int zonemax = 10 ;
+
+            int radiusmin = 8  ;
+            int radiusmax = 10 ;
+
+    popd
+
+# -----------------------------------------------------
+# Build and run our tests.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        mvn clean test -D 'test=ZoneMatcherTestCase'
+
+    popd
+
+

@@ -51,7 +51,7 @@ extends AbstractTestCase
         for (IndexingShape indexshape : IndexingShape.values())
             {
             final IndexingShape indexing = indexshape ;
-            findtest(
+            outerloop(
                 new Matcher.Factory()
                     {
                     @Override

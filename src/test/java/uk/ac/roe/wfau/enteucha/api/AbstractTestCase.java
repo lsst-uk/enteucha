@@ -55,43 +55,18 @@ extends TestCase
      * Test finding things.
      * 
      */
-    public void findtest(final Matcher.Factory factory)
+    public void outerloop(final Matcher.Factory factory)
         {
-        log.info("---- find start ----");
-        outer(
-            factory,
-            new PositionImpl(
-                120.0,
-                120.0
-                )
+        final Runtime runtime = Runtime.getRuntime();
+        final Position target = new PositionImpl(
+            120.0,
+            120.0
             );
-        try {
-            log.info("---- find finalize ----");
-            System.runFinalization();
-            Thread.sleep(10000);
-            }
-        catch (final InterruptedException ouch)
-            {
-            log.debug("InterruptedException [{}]", ouch);
-            }
-        try {
-            log.info("---- find gc ----");
-            System.gc();
-            Thread.sleep(10000);
-            }
-        catch (final InterruptedException ouch)
-            {
-            log.debug("InterruptedException [{}]", ouch);
-            }
-        log.info("---- find done ----");
-        }
-
-    public void outer(final Matcher.Factory factory, final Position target)
-        {
+        log.info("Target [{}][{}]", target.ra(), target.dec());
         for (int exponent = this.zonemin ; exponent <= this.zonemax ; exponent++ )
             {
             double zoneheight = Math.pow(2.0, -exponent);
-            log.info("---- Zone height [{}]", zoneheight);
+            log.info("Zone height [{}]", zoneheight);
             final Matcher matcher = factory.create(
                 zoneheight
                 );
@@ -101,9 +76,15 @@ extends TestCase
             for (double a = 0 ; a < insertmax ; a++)
                 {
                 double b = Math.pow(2.0, a);
-                log.info("---- Insert depth [{}][{}]", a, b);
+                log.info("Insert depth [{}][{}]", a, b);
+                log.info("Memory [{}][{}][{}]", runtime.totalMemory(), runtime.freeMemory(), runtime.maxMemory());
                 for (double c = -b ; c <= b ; c++)
                     {
+                    long cmantissa = Double.doubleToLongBits(c) & 0x000fffffffffffffL ;
+                    if (cmantissa == 0L)
+                        {
+                        log.debug("--- C [{}][{}]", c, Long.toHexString(cmantissa));
+                        }
                     for (double d = -b ; d <= b ; d++)
                         {
                         if ((c % 2) == 0)
@@ -123,16 +104,35 @@ extends TestCase
                     }
                 if (a >= insertmin)
                     {
-                    inner(
+                    innerloop(
                         matcher,
                         target 
                         );
                     }
                 }
             }
+        try {
+            log.info("---- Finalize");
+            System.runFinalization();
+            Thread.sleep(10000);
+            }
+        catch (final InterruptedException ouch)
+            {
+            log.debug("InterruptedException [{}]", ouch);
+            }
+        try {
+            log.info("---- Running gc");
+            System.gc();
+            Thread.sleep(10000);
+            }
+        catch (final InterruptedException ouch)
+            {
+            log.debug("InterruptedException [{}]", ouch);
+            }
         }
 
-    public void inner(final Matcher matcher, final Position target)
+
+    public void innerloop(final Matcher matcher, final Position target)
         {
         for (int exponent = this.radiusmin ; exponent <= this.radiusmax ; exponent++ )
             {
