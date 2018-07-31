@@ -98,7 +98,7 @@ extends TestCase
             matcher.insert(
                 target
                 );
-            for (double a = insertmin ; a < insertmax ; a++)
+            for (double a = 0 ; a < insertmax ; a++)
                 {
                 double b = Math.pow(2.0, a);
                 log.info("---- Insert depth [{}][{}]", a, b);
@@ -121,10 +121,13 @@ extends TestCase
                             );
                         }
                     }
-                inner(
-                    matcher,
-                    target 
-                    );
+                if (a >= insertmin)
+                    {
+                    inner(
+                        matcher,
+                        target 
+                        );
+                    }
                 }
             }
         }
