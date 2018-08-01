@@ -43,19 +43,17 @@ extends TestCase
 
     int looprepeat = 10;    
 
-    double spread = 2;
-
     int spreadmin = 1;
     int spreadmax = 7;
 
-    int insertmin = 8;
-    int insertmax = 10;
+    int insertmin = 4;
+    int insertmax = 6;
 
-    int zonemin = 6 ;
-    int zonemax = 8 ;
+    int zonemin = 4 ;
+    int zonemax = 6 ;
 
-    int radiusmin = 6 ;
-    int radiusmax = 8 ;
+    int radiusmin = 4 ;
+    int radiusmax = 6 ;
     
     /**
      * Test finding things.
@@ -69,52 +67,59 @@ extends TestCase
             120.0
             );
         log.info("Target [{}][{}]", target.ra(), target.dec());
-        for (int exponent = this.zonemin ; exponent <= this.zonemax ; exponent++ )
+
+        for (int spreadexp = this.spreadmax ; spreadexp >= this.spreadmin ; spreadexp--)
             {
-            double zoneheight = FastMath.pow(2.0, -exponent);
-            log.info("Zone height [{}]", zoneheight);
-            final Matcher matcher = factory.create(
-                zoneheight
-                );
-            matcher.insert(
-                target
-                );
-            for (double a = 0 ; a < insertmax ; a++)
+            double spreadval = FastMath.pow(2.0, spreadexp);
+            log.info("Data spread [{}]", spreadval);
+            
+            for (int zoneexp = this.zonemin ; zoneexp <= this.zonemax ; zoneexp++ )
                 {
-                double b = FastMath.pow(2.0, a);
-                log.info("Insert depth [{}][{}]", a, b);
-                log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
-                for (double c = -b ; c <= b ; c++)
+                double zoneheight = FastMath.pow(2.0, -zoneexp);
+                log.info("Zone height [{}]", zoneheight);
+                final Matcher matcher = factory.create(
+                    zoneheight
+                    );
+                matcher.insert(
+                    target
+                    );
+                for (double a = 0 ; a < insertmax ; a++)
                     {
-                    long cmantissa = Double.doubleToLongBits(c) & 0x000fffffffffffffL ;
-                    if (cmantissa == 0L)
+                    double b = FastMath.pow(2.0, a);
+                    log.info("Insert depth [{}][{}] spread [{}]", a, b, spreadval);
+                    log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
+                    for (double c = -b ; c <= b ; c++)
                         {
-                        log.debug("--- C [{}][{}]", c, Long.toHexString(cmantissa));
-                        }
-                    for (double d = -b ; d <= b ; d++)
-                        {
-                        if ((((long)c) % 2) == 0)
+                        long cmantissa = Double.doubleToLongBits(c) & 0x000fffffffffffffL ;
+                        if (cmantissa == 0L)
                             {
-                            if ((((long) d) % 2) == 0)
-                                {
-                                continue;
-                                }
+                            log.debug("--- C [{}][{}]", c, Long.toHexString(cmantissa));
                             }
-                        matcher.insert(
-                            new PositionImpl(
-                                (target.ra()  + (spread * (-c/b))),
-                                (target.dec() + (spread * (+d/b)))
-                                )
+                        for (double d = -b ; d <= b ; d++)
+                            {
+                            if ((((long)c) % 2) == 0)
+                                {
+                                if ((((long) d) % 2) == 0)
+                                    {
+                                    continue;
+                                    }
+                                }
+                            matcher.insert(
+                                new PositionImpl(
+                                    (target.ra()  + (spreadval * (-c/b))),
+                                    (target.dec() + (spreadval * (+d/b)))
+                                    )
+                                );
+                            }
+                        }
+                    if (a >= insertmin)
+                        {
+                        log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
+                        innerloop(
+                            matcher,
+                            target 
                             );
                         }
-                    }
-                if (a >= insertmin)
-                    {
-                    log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
-                    innerloop(
-                        matcher,
-                        target 
-                        );
                     }
                 }
             }
@@ -141,9 +146,9 @@ extends TestCase
 
     public void innerloop(final Matcher matcher, final Position target)
         {
-        for (int exponent = this.radiusmin ; exponent <= this.radiusmax ; exponent++ )
+        for (int radiusexp = this.radiusmin ; radiusexp <= this.radiusmax ; radiusexp++ )
             {
-            double radius = FastMath.pow(2.0, -exponent);
+            double radius = FastMath.pow(2.0, -radiusexp);
             log.info("---- Search radius[{}]", radius);
 
             long looptime  = 0 ;
