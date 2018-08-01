@@ -36,6 +36,7 @@
 
 # -----------------------------------------------------
 # Modify the VM memory allocation from 16G to 64G.
+# 
 #[user@trop03]
 
     source "${HOME}/libvirt.settings" 
@@ -322,6 +323,8 @@ EOF
         
 # -----------------------------------------------------
 # Run our Java builder, setting the memory limits.
+# https://developers.redhat.com/blog/2017/03/14/java-inside-docker/
+# https://docs.docker.com/config/containers/resource_constraints/#memory
 #[user@virtual]
 
         docker run \
@@ -391,15 +394,30 @@ EOF
 
             int looprepeat = 10;
 
-            int    insertmin = 12;
-            int    insertmax = 13;
-            double insertwidth = 2;
+            int spreadmin = 1;
+            int spreadmax = 7;
 
-            int zonemin = 8  ;
-            int zonemax = 10 ;
+            int insertmin = 11;
+            int insertmax = 13;
 
-            int radiusmin = 8  ;
-            int radiusmax = 10 ;
+            int zonemin = 6 ;
+            int zonemax = 8 ;
+
+            int radiusmin = 6 ;
+            int radiusmax = 8 ;
+
+    popd
+
+# -----------------------------------------------------
+# Edit the Java memory limits.
+#[user@builder]
+
+    source "${HOME:?}/enteucha.settings"
+    pushd "${ENTEUCHA_CODE:?}"
+
+        vi pom.xml
+
+            <argLine>-Xmx85G -Xms85G</argLine>
 
     popd
 
@@ -410,32 +428,18 @@ EOF
     source "${HOME:?}/enteucha.settings"
     pushd "${ENTEUCHA_CODE:?}"
 
-        mvn clean test -D 'test=ZoneMatcherTestCase'
+        mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
 
     popd
 
 
+    #
+    # Inside the VM, available memory is 81.5 GiB
+    Memory [81.5 GiB][65.8 GiB][81.5 GiB] 
 
 
-# -----------------------------------------------------
-# -----------------------------------------------------
 
-    source "${HOME:?}/enteucha.settings"
-    pushd "${ENTEUCHA_CODE:?}"
 
-        vi src/test/java/uk/ac/roe/wfau/enteucha/api/AbstractTestCase.java 
 
-            int looprepeat = 10;
 
-            int    insertmin = 12;
-            int    insertmax = 13;
-            double insertwidth = 2;
 
-            int zonemin =  8 ;
-            int zonemax = 10 ;
-
-            int radiusmin =  8 ;
-            int radiusmax = 10 ;
-
-        mvn clean test -D 'test=ZoneMatcherTestCase' -D 'surefire.timeout=0'
-        

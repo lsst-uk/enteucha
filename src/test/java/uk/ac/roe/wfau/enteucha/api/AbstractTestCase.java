@@ -93,7 +93,7 @@ extends TestCase
                         long cmantissa = Double.doubleToLongBits(c) & 0x000fffffffffffffL ;
                         if (cmantissa == 0L)
                             {
-                            log.debug("--- C [{}][{}]", c, Long.toHexString(cmantissa));
+                            log.debug("--- [{}][{}]", c, Long.toHexString(cmantissa));
                             }
                         for (double d = -b ; d <= b ; d++)
                             {
@@ -115,6 +115,7 @@ extends TestCase
                     if (a >= insertmin)
                         {
                         log.info("Memory [{}][{}][{}]", humanSize(runtime.totalMemory()), humanSize(runtime.freeMemory()), humanSize(runtime.maxMemory()));
+                        log.info("---- Data spread [{}]", spreadval);
                         innerloop(
                             matcher,
                             target 
@@ -149,7 +150,7 @@ extends TestCase
         for (int radiusexp = this.radiusmin ; radiusexp <= this.radiusmax ; radiusexp++ )
             {
             double radius = FastMath.pow(2.0, -radiusexp);
-            log.info("---- Search radius[{}]", radius);
+            log.info("---- Search radius [{}]", radius);
 
             long looptime  = 0 ;
             long loopcount = 0 ;

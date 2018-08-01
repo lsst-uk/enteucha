@@ -227,16 +227,16 @@ implements ZoneMatcher
     @Override
     public void insert(final Position position)
         {
-        log.debug("insert() [{}][{}]", position.ra(), position.dec());
+        //log.debug("insert() [{}][{}]", position.ra(), position.dec());
         final Zone zone = select(
                 (int) FastMath.floor((position.dec() + 90) / this.zoneheight)
                 );
-        log.debug("Zone [{}]", zone.ident());
+        //log.debug("Zone [{}]", zone.ident());
         zone.insert(
             position
             );
         this.total++;
-        log.debug("Added [{}][{}]", zone.total(), total());
+        //log.debug("Added [{}][{}]", zone.total(), total());
         }
 
     /**
