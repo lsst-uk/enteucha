@@ -1,0 +1,127 @@
+Return-Path: <dmr@roe.ac.uk>
+Delivered-To: dave@metagrid.co.uk
+Received: from smtp-out4.electric.net (smtp-out4.electric.net [192.162.216.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp-one.metagrid.co.uk (Postfix) with ESMTPS id C7D1C4A82C0
+	for <dave.morris@metagrid.co.uk>; Tue, 27 Feb 2018 16:11:39 +0000 (GMT)
+Received: from 1eqhqr-0002W2-Ts by out4c.electric.net with emc1-ok (Exim 4.87)
+	(envelope-from <dmr@roe.ac.uk>)
+	id 1eqhqs-0002eD-Vm
+	for dave.morris@metagrid.co.uk; Tue, 27 Feb 2018 08:11:38 -0800
+Resent-Date: Tue, 27 Feb 2018 08:11:38 -0800
+Resent-Message-Id: <E1eqhqs-0002eD-Vm@out4c.electric.net>
+Received: by emcmailer; Tue, 27 Feb 2018 08:11:38 -0800
+Received: from [195.194.122.14] (helo=mercury.roe.ac.uk)
+	by out4c.electric.net with esmtps (TLSv1.2:ECDHE-RSA-AES256-SHA384:256)
+	(Exim 4.87)
+	(envelope-from <dmr@roe.ac.uk>)
+	id 1eqhqr-0002W2-Ts
+	for dave.morris@metagrid.co.uk; Tue, 27 Feb 2018 08:11:37 -0800
+Received: from MERCURY.roe.ac.uk ([2002:c3c2:7a0e::c3c2:7a0e]) by
+ MERCURY.roe.ac.uk ([2002:c3c2:7a0e::c3c2:7a0e]) with Microsoft SMTP Server id
+ 14.03.0382.000; Tue, 27 Feb 2018 16:11:36 +0000
+From: "Nigel C. Hambly" <nch@roe.ac.uk>
+To: Dave Morris <dmr@roe.ac.uk>
+Subject: Spherical polars, cartesians, and "zoned" neighbours
+Thread-Topic: Spherical polars, cartesians, and "zoned" neighbours
+Thread-Index: AQHTr+WkBf7kkg5gK02WI+fgP/sgkg==
+Date: Tue, 27 Feb 2018 16:11:35 +0000
+Message-ID: <108e303dfbf04f62a9b209027f8ca209@MERCURY.roe.ac.uk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-Exchange-Inbox-Rules-Loop: dmr@roe.ac.uk
+X-MS-TNEF-Correlator:
+x-originating-ip: [192.108.120.86]
+Resent-From: <dmr@roe.ac.uk>
+Content-Type: multipart/mixed;
+	boundary="_002_108e303dfbf04f62a9b209027f8ca209MERCURYroeacuk_"
+MIME-Version: 1.0
+X-Outbound-IP: 195.194.122.14
+X-Env-From: dmr@roe.ac.uk
+X-Proto: esmtps
+X-Revdns: mercury.roe.ac.uk
+X-HELO: mercury.roe.ac.uk
+X-TLS: TLSv1.2:ECDHE-RSA-AES256-SHA384:256
+X-Authenticated_ID: 
+X-PolicySMART: 3590380
+X-Virus-Status: Scanned by VirusSMART (c)
+X-Virus-Status: Scanned by VirusSMART (s)
+
+--_002_108e303dfbf04f62a9b209027f8ca209MERCURYroeacuk_
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <7456DBE23788A14A856E1B49BA045A65@roe.ac.uk>
+Content-Transfer-Encoding: quoted-printable
+
+Dave
+
+see https://arxiv.org/pdf/cs/0408031.pdf
+
+Jim=92s comparison is between a purely relational approach in T-SQL versus
+DB UDFs implementing HTM (so is unfair in that respect). But at least it gi=
+ves
+you the background. In particular, the =93zoned=94 neighbours approach is
+conceptually straightforward, and amenable (I think) to a potentially very =
+fast
+implementation outside of an RDBMS.
+
+Here=92s a small python script that demonstrates the small angle distance
+computation:
+
+
+Cheers
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Nigel Hambly Tel: +44-131-668-8234
+Institute for Astronomy Fax: +44-131-668-8416
+School of Physics and Astronomy
+University of Edinburgh Email: nch@roe.ac.uk<mailto:nch@roe.ac.uk>
+Royal Observatory
+Blackford Hill
+Edinburgh EH9 3HJ
+
+The University of Edinburgh is a charitable body, registered
+in Scotland, with registration number SC005336.
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+
+--_002_108e303dfbf04f62a9b209027f8ca209MERCURYroeacuk_
+Content-Type: text/x-python-script; name="spxyz.py"
+Content-Description: spxyz.py
+Content-Disposition: attachment; filename="spxyz.py"; size=1350;
+	creation-date="Tue, 27 Feb 2018 16:11:35 GMT";
+	modification-date="Tue, 27 Feb 2018 16:11:35 GMT"
+Content-ID: <F9C97FB5666DD44382CEA7B53B99F03A@roe.ac.uk>
+Content-Transfer-Encoding: base64
+
+aW1wb3J0IG1hdGgNCg0KIw0KIyAgQ29tcHV0ZXMgZGlyZWN0aW9uIGNvc2luZXMgZnJvbSBzcGhl
+cmljYWwgcG9sYXJzDQojICAodHJpZ29ub21ldHJ5IGNyaWJiZWQgZnJvbSBTTEFMSUIpIGdpdmVu
+IHJhIGFuZA0KIyAgZGVjIGluIHJhZGlhbnMsIHJldHVybnMgY2FydGVzaWFuIHVuaXQgdmVjdG9y
+cw0KIyAgY3gsIGN5LCBjeiBlYWNoIGluIHRoZSByYW5nZSAwIHRvIDEuDQojDQpkZWYgc3BoZXJp
+Y2FsVG9DYXJ0ZXNpYW4ocmEsIGRlYyk6DQogICAgDQogICAgY29zZCA9IG1hdGguY29zKGRlYykN
+CiAgICBjeCA9IG1hdGguY29zKHJhKSAqIGNvc2QNCiAgICBjeSA9IG1hdGguc2luKHJhKSAqIGNv
+c2QNCiAgICBjeiA9IG1hdGguc2luKGRlYykNCiAgICByZXR1cm4gY3gsIGN5LCBjeg0KICAgDQoj
+IA0KIyAgQW5ndWxhciBkaXN0YW5jZSBiZXR3ZWVuIDIgTkVBUkJZKCEpIHBvaW50cyBvbiB0aGUN
+CiMgIGNlbGVzdGlhbCBzcGhlcmUgKGNvb3JkcyBpbiByYWRpYW5zKSwgcmV0dXJucw0KIyAgYW5n
+dWxhciBkaXN0YW5jZSBpbiByYWRpYW5zDQojDQpkZWYgYW5ndWxhckRpc3RhbmNlKHJhMSwgZGVj
+MSwgcmEyLCBkZWMyKToNCiAgICAgDQogICAgY3gxLCBjeTEsIGN6MSA9IHNwaGVyaWNhbFRvQ2Fy
+dGVzaWFuKHJhMSwgZGVjMSkNCiAgICBjeDIsIGN5MiwgY3oyID0gc3BoZXJpY2FsVG9DYXJ0ZXNp
+YW4ocmEyLCBkZWMyKQ0KICAgICMgc2VlIGh0dHBzOi8vYXJ4aXYub3JnL3BkZi9jcy8wNDA4MDMx
+LnBkZg0KICAgIHIyID0gKGN4MSAtIGN4MikqKGN4MSAtIGN4MikgKyAoY3kxIC0gY3kyKSooY3kx
+IC0gY3kyKSArIChjejEgLSBjejIpKihjejEgLSBjejIpDQogICAgcmV0dXJuIDIuMCptYXRoLmFz
+aW4obWF0aC5zcXJ0KHIyKS8yLjApDQogICAgDQpvbmVBcmNzZWNJblJhZHMgPSBtYXRoLnBpIC8g
+KDE4MC4wICogMzYwMC4wKQ0KIyBhbmd1bGFyIGRpc3RhbmNlIGJldHdlZW4gMGggMGRlZyBhbmQg
+cGx1cyBvbmUgYXJjc2VjIGluIGJvdGg6DQpwcmludCBhbmd1bGFyRGlzdGFuY2UoMC4wLCAwLjAs
+IG9uZUFyY3NlY0luUmFkcywgb25lQXJjc2VjSW5SYWRzKSoxODAuMCozNjAwLjAgLyBtYXRoLnBp
+DQojIC4uLiBhbnN3ZXIgc2hvdWxkIGJlIHNxcnQoMikgYXJjc2VjDQojIGFub3RoZXIgdGVzdDog
+b25lIGFyY3NlY29uZCBvZmYgdGhlIE5vcnRoIENlbGVzdGlhbCBQb2xlIChhdCBhbnkgdmFsdWUg
+b2YgcmEpDQpwcmludCBhbmd1bGFyRGlzdGFuY2UobWF0aC5waSwgbWF0aC5waS8yLjAsIG1hdGgu
+cGksIG1hdGgucGkvMi4wIC0gb25lQXJjc2VjSW5SYWRzKSoxODAuMCozNjAwLjAgLyBtYXRoLnBp
+DQojIC4uLiBhbnN3ZXIgc2hvdWxkIGJlIDEuMCBhcmNzZWMNCg0K
+
+--_002_108e303dfbf04f62a9b209027f8ca209MERCURYroeacuk_--
